@@ -1,0 +1,40 @@
+一、报名功能
+0. 必须先交50元的会员费，才可以进行报名 
+1. 等级自动匹配：系统自动读取学员当前腰带等级（如白带十级），报名时直接锁定可报考的下一级别（白黄带九级），禁止学员手动选择，避免误报。
+2. 头像上传机制：若学员无上传头像，报名时强制提示上传一寸照，且上传后自动同步至会员信息档案。
+ 
+二、缴费功能
+ 
+不同腰带等级对应不同收费标准，学员完成报名信息确认后，系统根据所选报考等级自动显示对应金额。
+{"type":"vip_member_price","name":"会员费","value":50}
+{"type":"belt_level","name":"白带十级"  ,"level":10,"image":"/images/belts/white.png"       ,"value":300 ,"index":0 }
+{"type":"belt_level","name":"白黄带九级","level":9 ,"image":"/images/belts/white-yellow.png","value":320 ,"index":1 }
+{"type":"belt_level","name":"黄带八级"  ,"level":8 ,"image":"/images/belts/yellow.png"      ,"value":360 ,"index":2 }
+{"type":"belt_level","name":"黄绿带七级","level":7 ,"image":"/images/belts/yellow-green.png","value":400 ,"index":3 }
+{"type":"belt_level","name":"绿带六级"  ,"level":6 ,"image":"/images/belts/green.png"       ,"value":450 ,"index":4 }
+{"type":"belt_level","name":"绿蓝带五级","level":5 ,"image":"/images/belts/green-blue.png"  ,"value":500 ,"index":5 }
+{"type":"belt_level","name":"蓝带四级"  ,"level":4 ,"image":"/images/belts/blue.png"        ,"value":550 ,"index":6 }
+{"type":"belt_level","name":"蓝红带三级","level":3 ,"image":"/images/belts/blue-red.png"    ,"value":600 ,"index":7 }
+{"type":"belt_level","name":"红带二级"  ,"level":2 ,"image":"/images/belts/red.png"         ,"value":650 ,"index":8 }
+{"type":"belt_level","name":"红黑带一级","level":1 ,"image":"/images/belts/red-black.png"   ,"value":700 ,"index":9 }
+{"type":"belt_level","name":"黑带一段/品","level":1,"image":"/images/belts/black.png"       ,"value":2600,"index":10}
+{"type":"belt_level","name":"黑带二段/品","level":2,"image":"/images/belts/black.png"       ,"value":3200,"index":11}
+{"type":"belt_level","name":"黑带三段/品","level":3,"image":"/images/belts/black.png"       ,"value":4000,"index":12}
+ 
+三、考试功能
+ 
+1. 考试界面展示：考试页面显示学员姓名、当前腰带等级；得分项分三大模块：
+- 行为素质（后台自定义分值）
+- 专项技术（后台自定义分值）
+- 身体素质（后台自定义分值）
+- 总分：三项得分填写后自动计算（总分固定为100分，各模块权重后台灵活配置）。
+2. 分组规则：
+- 每组考试最多4人，且仅允许同腰带等级学员分组；等级不同者无法分在同一组。
+ 
+四、考试结果查看
+ 
+考试结束后小程序端可实时查看孩子的行为素质、专项技术、身体素质单项得分及总分。
+ 
+五、信息导出功能
+ 
+支持按腰带等级筛选导出会员考级信息，导出文件包含学员一寸照、姓名、身份证号（例如：一键导出所有白黄带学员信息） 。

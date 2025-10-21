@@ -1,0 +1,13 @@
+{"_id":"e8325694680e3fbf0259b75048518927","type":"belt_level","name":"白带十级","level":10,"image":"/images/belts/white.png"}
+{"_id":"e8325694680e3fbf0259b75138eabce8","type":"belt_level","name":"白黄带九级","level":9,"image":"/images/belts/white-yellow.png"}
+{"_id":"e8325694680e3fbf0259b75247b8d288","type":"belt_level","name":"黄带八级","level":8,"image":"/images/belts/yellow.png"}
+{"_id":"e8325694680e3fbf0259b7533699f999","type":"belt_level","name":"黄绿带七级","level":7,"image":"/images/belts/yellow-green.png"}
+{"_id":"e8325694680e3fbf0259b7543c9d2ab6","type":"belt_level","name":"绿带六级","level":6,"image":"/images/belts/green.png"}
+{"_id":"e8325694680e3fbf0259b7551bb65d2d","type":"belt_level","name":"绿蓝带五级","level":5,"image":"/images/belts/green-blue.png"}
+{"_id":"e8325694680e3fbf0259b75679643436","type":"belt_level","name":"蓝带四级","level":4,"image":"/images/belts/blue.png"}
+{"_id":"e8325694680e3fbf0259b7570cd6647b","type":"belt_level","name":"蓝红带三级","level":3,"image":"/images/belts/blue-red.png"}
+{"_id":"e8325694680e3fbf0259b75826a91997","type":"belt_level","name":"红带二级","level":2,"image":"/images/belts/red.png"}
+{"_id":"e8325694680e3fbf0259b75941e3773c","type":"belt_level","name":"红黑带一级","level":1,"image":"/images/belts/red-black.png"}
+{"_id":"e8325694680e3fbf0259b75a11aca173","type":"belt_level","name":"黑带一段/品","level":1,"image":"/images/belts/black.png"}
+{"_id":"e8325694680e3fbf0259b75b220ee57d","type":"belt_level","name":"黑带二段/品","level":2,"image":"/images/belts/black.png"}
+{"_id":"e8325694680e3fbf0259b75c63981952","type":"belt_level","name":"黑带三段/品","level":3,"image":"/images/belts/black.png"}

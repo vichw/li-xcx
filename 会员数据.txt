@@ -1,0 +1,5 @@
+{"name":"每次课50","type":"vip_class_price","value":50  }
+{"name":"王者卡3680元","type":"vip_type","value":3680   }
+{"name":"黄金卡3280元","type":"vip_type","value":3280   }
+{"name":"白银卡2980元","type":"vip_type","value":2980   }
+{"name":"青铜卡2400元","type":"vip_type","value":2400   }

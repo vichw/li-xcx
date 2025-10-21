@@ -1,0 +1,3 @@
+[
+  {"_id":"admin001","username":"admin","password":"admin123","name":"管理员","role":"admin","createTime":{"$date":"2024-01-01T00:00:00Z"},"updateTime":{"$date":"2024-01-01T00:00:00Z"}}
+] 

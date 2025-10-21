@@ -1,0 +1,17 @@
+{"type":"vip_member_price","name":"会员费","value":50}
+{"type":"weights_behavior","name":"行为素质","value":0.3}
+{"type":"weights_tech","name":"专项技术","value":0.3}
+{"type":"weights_physical","name":"身体素质","value":0.4}
+{"type":"belt_level","name":"白带十级"  ,"level":10,"image":"/images/belts/white.png"       ,"value":300 ,"index":0 }
+{"type":"belt_level","name":"白黄带九级","level":9 ,"image":"/images/belts/white-yellow.png","value":320 ,"index":1 }
+{"type":"belt_level","name":"黄带八级"  ,"level":8 ,"image":"/images/belts/yellow.png"      ,"value":360 ,"index":2 }
+{"type":"belt_level","name":"黄绿带七级","level":7 ,"image":"/images/belts/yellow-green.png","value":400 ,"index":3 }
+{"type":"belt_level","name":"绿带六级"  ,"level":6 ,"image":"/images/belts/green.png"       ,"value":450 ,"index":4 }
+{"type":"belt_level","name":"绿蓝带五级","level":5 ,"image":"/images/belts/green-blue.png"  ,"value":500 ,"index":5 }
+{"type":"belt_level","name":"蓝带四级"  ,"level":4 ,"image":"/images/belts/blue.png"        ,"value":550 ,"index":6 }
+{"type":"belt_level","name":"蓝红带三级","level":3 ,"image":"/images/belts/blue-red.png"    ,"value":600 ,"index":7 }
+{"type":"belt_level","name":"红带二级"  ,"level":2 ,"image":"/images/belts/red.png"         ,"value":650 ,"index":8 }
+{"type":"belt_level","name":"红黑带一级","level":1 ,"image":"/images/belts/red-black.png"   ,"value":700 ,"index":9 }
+{"type":"belt_level","name":"黑带一段/品","level":1,"image":"/images/belts/black.png"       ,"value":2600,"index":10}
+{"type":"belt_level","name":"黑带二段/品","level":2,"image":"/images/belts/black.png"       ,"value":3200,"index":11}
+{"type":"belt_level","name":"黑带三段/品","level":3,"image":"/images/belts/black.png"       ,"value":4000,"index":12}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>数据库操作测试</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .btn {
+            padding: 5px 10px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>数据库操作测试</h2>
+        
+        <div class="form-group">
+            <label for="collectionName">集合名称：</label>
+            <input type="text" id="collectionName" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="dataInput">数据输入：</label>
+            <textarea id="dataInput" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+            <button class="btn" onclick="getList()">获取列表</button>
+            <button class="btn" onclick="addData()">添加数据</button>
+            <button class="btn" onclick="updateData()">更新数据</button>
+            <button class="btn" onclick="deleteData()">删除数据</button>
+        </div>
+        <div id="result" class="form-group"></div>
+    </div>
+    <script>
+        async function getList() {
+            try {
+                const collection = document.getElementById('collection
