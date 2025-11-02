@@ -74,7 +74,7 @@
         </el-table-column>
 
         <el-table-column label="有效期" :sortable="true" :sort-method="sortByMembershipDate">
-          <template #default="scope">
+          <template #default="scope"> 
             {{ formatDate(scope.row.membership_start_date) }} - {{ formatDate(scope.row.membership_end_date) }}
           </template>
         </el-table-column>
@@ -151,7 +151,7 @@
         <el-form-item label="会员卡" v-if="studentForm.membership_type === '年卡'">
           <el-select v-model="studentForm.membership_name" @change="handleYearCardChange" class="w-full">
             <el-option
-              v-for="card in vipTypes"
+              v-for="card in gradeYearCardOptions"
               :key="card.value"
               :label="card.label"
               :value="card.value"
@@ -231,7 +231,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {uploadFile,generateSignedUrl, getConfig,getStudents, addStudent, updateStudent, deleteStudent } from '../utils/cloudbase'
 import dayjs from 'dayjs'
@@ -314,6 +314,20 @@ const filteredStudents = computed(() => {
     student.name.toLowerCase().includes(keyword) ||
     student.phoneNumber.includes(keyword)
   )
+})
+
+// 根据选择的等级生成会员卡选项
+const gradeYearCardOptions = computed(() => {
+  if (!studentForm.value.grade || !gradeList.value.length) return []
+  
+  const selectedGrade = gradeList.value.find(grade => grade.name === studentForm.value.grade)
+  if (!selectedGrade || !selectedGrade.yearprice) return []
+  
+  return [{
+    label: `${selectedGrade.name}-${selectedGrade.yearprice}`,
+    value: selectedGrade.yearprice,
+    price: selectedGrade.yearprice
+  }]
 })
 
 // 加载学生数据
@@ -633,21 +647,19 @@ const handleMembershipTypeChange = (type) => {
     studentForm.value.membership_name = '按次卡'
   } else if (type === '年卡') {
     studentForm.value.remaining_count = 0 // 年卡不计次数
-    // 如果有会员卡类型，默认选择第一个
-    if (vipTypes.value && vipTypes.value.length > 0) {
-      studentForm.value.membership_name = vipTypes.value[0].value
-      studentForm.value.membership_price = vipTypes.value[0].price
+    // 如果已选择等级且有对应的年卡价格
+    if (studentForm.value.grade && gradeYearCardOptions.value.length > 0) {
+      const yearCardOption = gradeYearCardOptions.value[0];
+      studentForm.value.membership_name = yearCardOption.value;
+      studentForm.value.membership_price = Number(yearCardOption.price);
     }
   }
 }
 
 // 处理年卡选择
-const handleYearCardChange = (cardName) => {
-  studentForm.value.membership_name = cardName
-  const selectedCard = vipTypes.value.find(card => card.value === cardName)
-  if (selectedCard) {
-    studentForm.value.membership_price = selectedCard.price
-  }
+const handleYearCardChange = (yearPrice) => {
+  studentForm.value.membership_name = yearPrice
+  studentForm.value.membership_price = Number(yearPrice)
 }
 
 // 处理按次数量变更
@@ -659,6 +671,15 @@ const handleCountChange = (count) => {
   // 更新价格
   studentForm.value.membership_price = studentForm.value.remaining_count * vipClassPrice.value
 }
+
+// 监听等级变化
+watch(() => studentForm.value.grade, (newGrade) => {
+  if (studentForm.value.membership_type === '年卡' && gradeYearCardOptions.value.length > 0) {
+    const yearCardOption = gradeYearCardOptions.value[0];
+    studentForm.value.membership_name = yearCardOption.value;
+    studentForm.value.membership_price = Number(yearCardOption.price);
+  }
+})
 
 onMounted(() => {
   loadStudents()

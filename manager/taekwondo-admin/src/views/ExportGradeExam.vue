@@ -1,8 +1,9 @@
 <template>
   <div>
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold">报名管理</h2>
-      <div class="flex items-center">
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold mb-4">报名管理</h2>
+      <!-- 搜索项 - 第一行 -->
+      <div class="flex items-center mb-4">
         <el-select v-model="selectedGrade" placeholder="选择考级等级" class="w-48 mr-4">
           <el-option
             v-for="g in gradeList"
@@ -26,8 +27,12 @@
           class="w-72 mr-4"
         />
         <el-button type="primary" @click="fetchList">查询</el-button>
+      </div>
+      <!-- 按钮 - 第二行 -->
+      <div class="flex items-center">
         <el-button type="danger" :disabled="selectedRows.length === 0" @click="batchDelete">删除</el-button>
-        <el-button type="success" @click="exportZip" :disabled="filteredList.length === 0">一键导出</el-button>
+        <el-button type="success" @click="exportZip" :disabled="filteredList.length === 0" class="ml-2">一键导出</el-button>
+        <el-button type="primary" @click="exportExcel" :disabled="filteredList.length === 0" class="ml-2">导出Excel</el-button>
         <el-button type="warning" @click="openWeightDialog" class="ml-2">权重设置</el-button>
       </div>
     </div>
@@ -158,6 +163,7 @@ import JSZip from 'jszip'
 import { saveAs } from 'file-saver'
 import { getBeltLevels, getGradeExamMembersByLevel, downloadImage, getConfig, updateGradeExamScore, updateWeightConfig, deleteGradeExam } from '../utils/cloudbase'
 import dayjs from 'dayjs'
+import * as XLSX from 'xlsx'
 
 const gradeList = ref([{ name: '全部', index: -1, value: 0 }])
 const selectedGrade = ref('全部')
@@ -259,10 +265,71 @@ const exportZip = async () => {
   })
 }
 
+// 导出Excel功能
+const exportExcel = () => {
+  if (filteredList.value.length === 0) {
+    ElMessage.warning('无可导出的数据')
+    return
+  }
+
+  // 准备Excel数据
+  const excelData = filteredList.value.map(student => {
+    return {
+      '姓名': student.name || '',
+      '性别': getGenderFromIdCard(student.idCard),
+      '身份证号': student.idCard || '',
+      '出生日期': getBirthDateFromIdCard(student.idCard),
+      '考级级别': student.next_grade || '',
+      '总分': student.score_total || ''
+    }
+  })
+
+  // 创建工作簿和工作表
+  const worksheet = XLSX.utils.json_to_sheet(excelData)
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, '考级学员信息')
+
+  // 设置列宽
+  const columnWidths = [
+    { wch: 10 }, // 姓名
+    { wch: 6 },  // 性别
+    { wch: 20 }, // 身份证号
+    { wch: 12 }, // 出生日期
+    { wch: 12 }, // 考级级别
+    { wch: 8 }   // 总分
+  ]
+  worksheet['!cols'] = columnWidths
+
+  // 生成Excel文件并下载
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+  const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+  saveAs(blob, `考级学员信息表-${dayjs().format('YYYYMMDD')}.xlsx`)
+  
+  ElMessage.success('Excel导出成功')
+}
+
 const formatDate = (val) => {
   if (!val) return '--'
   if (val.$date) return dayjs(val.$date).format('YYYY-MM-DD HH:mm:ss')
   return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
+}
+
+// 从身份证号获取性别
+const getGenderFromIdCard = (idCard) => {
+  if (!idCard || idCard.length !== 18) return ''
+  // 身份证号第17位，奇数为男，偶数为女
+  const genderCode = parseInt(idCard.charAt(16), 10)
+  return genderCode % 2 === 1 ? '男' : '女'
+}
+
+// 从身份证号获取出生日期
+const getBirthDateFromIdCard = (idCard) => {
+  if (!idCard || idCard.length !== 18) return ''
+  // 身份证号第7-14位是出生日期
+  const year = idCard.substring(6, 10)
+  const month = idCard.substring(10, 12)
+  const day = idCard.substring(12, 14)
+  return `${year}-${month}-${day}`
 }
 
 const loadWeights = async () => {
@@ -398,11 +465,13 @@ const batchDelete = async () => {
 
 <style scoped>
 .mb-6 { margin-bottom: 24px; }
+.mb-4 { margin-bottom: 16px; }
 .w-48 { width: 192px; }
 .w-72 { width: 288px; }
 .mr-4 { margin-right: 16px; }
+.ml-2 { margin-left: 8px; }
 .el-table th, .el-table td {
   padding: 6px 8px !important;
   font-size: 13px;
 }
-</style> 
+</style>
