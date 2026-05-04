@@ -39,6 +39,21 @@
             <el-icon><Document /></el-icon>
             <span>报名管理</span>
           </el-menu-item>
+
+          <el-menu-item index="/dashboard/competition">
+            <el-icon><Trophy /></el-icon>
+            <span>比赛管理</span>
+          </el-menu-item>
+
+          <el-menu-item index="/dashboard/group-config">
+            <el-icon><Setting /></el-icon>
+            <span>分组规则配置</span>
+          </el-menu-item>
+
+          <el-menu-item index="/dashboard/feedback">
+            <el-icon><ChatDotRound /></el-icon>
+            <span>投诉建议</span>
+          </el-menu-item>
         </el-menu>
       </div>
       

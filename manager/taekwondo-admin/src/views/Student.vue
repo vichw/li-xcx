@@ -3,18 +3,42 @@
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold">学生管理</h2>
 
-      <!-- 搜索框 -->
-      <div class="flex items-center">
+      <!-- 搜索和筛选区域 -->
+      <div class="flex items-center gap-3">
         <el-input
           v-model="searchKeyword"
           placeholder="搜索学生姓名/手机号"
           clearable
-          class="w-72 mr-4"
+          class="w-60"
         >
           <template #prefix>
             <el-icon><Search /></el-icon>
           </template>
         </el-input>
+
+        <el-select
+          v-model="filterMembershipType"
+          placeholder="会员类型"
+          clearable
+          class="w-32"
+        >
+          <el-option label="全部" value="" />
+          <el-option label="按次" value="按次" />
+          <el-option label="年卡" value="年卡" />
+        </el-select>
+
+        <el-select
+          v-model="filterStatus"
+          placeholder="状态筛选"
+          clearable
+          class="w-32"
+        >
+          <el-option label="全部" value="" />
+          <el-option label="正常" value="正常" />
+          <el-option label="已过期" value="已过期" />
+          <el-option label="即将到期" value="即将到期" />
+          <el-option label="次数用完" value="次数用完" />
+        </el-select>
 
         <el-button type="primary" @click="handleAdd">
           <el-icon class="mr-2"><Plus /></el-icon>
@@ -32,7 +56,7 @@
         :empty-text="loading ? '加载中...' : '暂无数据'"
         size="small"
       >
-        <el-table-column label="头像" width="100">
+        <el-table-column label="头像" width="65">
           <template #default="scope">
             <el-avatar :size="50" :src="scope.row.avatar" :fit="'cover'">
               <el-icon><User /></el-icon>
@@ -40,15 +64,15 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="name" label="姓名" />
-        <el-table-column prop="phoneNumber" label="手机号" />
-        <el-table-column label="年龄" width="80">
+        <el-table-column prop="name" label="姓名"  width="60"/>
+        <el-table-column prop="phoneNumber" label="手机号"  width="60"/>
+        <el-table-column label="年龄" width="40">
           <template #default="scope">
             {{ getAgeFromIdCard(scope.row.idCard) }}
           </template>
         </el-table-column>
-        <el-table-column prop="grade" label="等级" width="100" />
-        <el-table-column label="会员类型" width="120">
+        <el-table-column prop="grade" label="等级" width="70" />
+        <el-table-column label="会员类型" width="70">
           <template #default="scope">
             <el-tag :type="scope.row.membership_type === '年卡' ? 'success' : 'warning'">
               {{ scope.row.membership_type || '未设置' }}
@@ -58,16 +82,31 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="剩余次数" width="100">
+        <el-table-column label="剩余次数" width="65">
           <template #default="scope">
             <el-tag :type="scope.row.remaining_count > 0 ? 'success' : 'warning'">
               {{ scope.row.remaining_count || 0 }} 次
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column label="课时进度" width="140">
+          <template #default="scope">
+            <div class="course-progress">
+              <span class="progress-text">
+                {{ (scope.row.completed_courses !== undefined && scope.row.completed_courses !== null) ? scope.row.completed_courses : 0 }}/{{ getRequiredCourses(scope.row.grade) }}
+              </span>
+              <el-progress 
+                :percentage="getCourseProgressPercent(scope.row)" 
+                :stroke-width="6"
+                :show-text="false"
+                :status="getCourseProgressPercent(scope.row) >= 100 ? 'success' : ''"
+              />
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" width="100">
           <template #default="scope">
-            <el-tag :type="getStatus(scope.row) === '正常' ? 'success' : (getStatus(scope.row) === '已过期' ? 'danger' : 'info')">
+            <el-tag :type="getStatusTagType(scope.row)">
               {{ getStatus(scope.row) }}
             </el-tag>
           </template>
@@ -91,8 +130,14 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="280">
           <template #default="scope">
+            <el-button type="success" size="small" @click="handleConsumeCourse(scope.row)">
+              消课
+            </el-button>
+            <el-button type="info" size="small" @click="handleViewCourseRecords(scope.row)">
+              课时记录
+            </el-button>
             <el-button type="primary" size="small" @click="handleEdit(scope.row)">
               编辑
             </el-button>
@@ -159,23 +204,88 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="剩余次数" prop="remaining_count" v-if="studentForm.membership_type === '按次'">
-          <el-input-number
-            v-model="studentForm.remaining_count"
-            :min="10"
-            :max="999"
-            placeholder="请输入剩余次数"
-            class="w-full"
-            @change="handleCountChange"
-          />
+        <!-- 按次会员的课时相关字段 -->
+        <template v-if="studentForm.membership_type === '按次'">
+          <el-form-item label="单次价格" prop="class_price">
+            <div class="flex items-center gap-2">
+              <el-input-number
+                v-model="studentForm.class_price"
+                :min="0"
+                :max="9999"
+                :precision="2"
+                placeholder="请输入单次课价格"
+                class="flex-1"
+                @change="handleClassPriceChange"
+              />
+              <span class="text-gray-500 text-sm">元/次</span>
+            </div>
+          </el-form-item>
+
+          <el-form-item label="购买次数" prop="purchased_count">
+            <div class="flex items-center gap-2">
+              <el-input-number
+                v-model="studentForm.purchased_count"
+                :min="1"
+                :max="999"
+                placeholder="请输入购买次数"
+                class="flex-1"
+                @change="handlePurchasedCountChange"
+              />
+              <span class="text-gray-500 text-sm">次</span>
+            </div>
+          </el-form-item>
+
+          <el-form-item label="剩余次数">
+            <div class="flex items-center gap-2">
+              <el-input
+                :model-value="studentForm.remaining_count || 0"
+                disabled
+                class="flex-1"
+                style="width: 200px;"
+              />
+              <span class="text-gray-500 text-sm">购买次数变更后自动调整</span>
+            </div>
+          </el-form-item>
+        </template>
+
+        <!-- 考级课时显示（所有会员类型都显示） -->
+        <el-form-item label="考级课时" v-if="studentForm.grade">
+          <div class="flex items-center gap-2">
+            <el-input-number
+              :model-value="studentForm.completed_courses || 0"
+              :min="0"
+              :max="999"
+              disabled
+              class="w-32"
+            />
+            <span class="text-gray-600">/</span>
+            <el-input-number
+              :model-value="getRequiredCourses(studentForm.grade)"
+              :min="0"
+              :max="999"
+              disabled
+              class="w-32"
+            />
+          </div>
+          <div class="text-gray-500 text-xs mt-1">
+            系统将根据等级自动设置课时数，课时消费请使用"消课"功能
+          </div>
         </el-form-item>
 
         <el-form-item label="会员价格" prop="membership_price">
-          <el-input-number 
-            v-model="studentForm.membership_price" 
-            :disabled="true"
-            class="w-full" 
-          />
+          <div class="flex items-center gap-2">
+            <el-input-number 
+              v-model="studentForm.membership_price" 
+              :disabled="true"
+              class="flex-1" 
+            />
+            <span class="text-gray-500 text-sm" v-if="studentForm.membership_type === '按次'">
+              = {{ studentForm.purchased_count || 0 }} 次 × {{ studentForm.class_price || 0 }} 元
+            </span>
+            <span class="text-gray-500 text-sm" v-else>
+              元
+            </span>
+          </div>
         </el-form-item>
 
         <el-form-item label="头像" prop="avatar">
@@ -191,7 +301,7 @@
           </el-upload>
         </el-form-item>
 
-        <el-form-item label="会员开始日期" prop="membership_start_date">
+        <el-form-item label="会员开始日期" prop="membership_start_date" v-if="studentForm.membership_type === '年卡'">
           <el-date-picker
             v-model="studentForm.membership_start_date"
             type="date"
@@ -202,7 +312,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="会员结束日期" prop="membership_end_date">
+        <el-form-item label="会员结束日期" prop="membership_end_date" v-if="studentForm.membership_type === '年卡'">
           <el-date-picker
             v-model="studentForm.membership_end_date"
             type="date"
@@ -227,18 +337,87 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 课时记录弹窗 -->
+    <el-dialog
+      v-model="courseRecordDialogVisible"
+      title="课时消费记录"
+      width="700px"
+      destroy-on-close
+    >
+      <div v-if="currentStudentForRecords" class="mb-4">
+        <el-descriptions :column="4" border size="small">
+          <el-descriptions-item label="学生姓名">{{ currentStudentForRecords.name }}</el-descriptions-item>
+          <el-descriptions-item label="当前等级">{{ currentStudentForRecords.grade }}</el-descriptions-item>
+          <el-descriptions-item label="会员类型">{{ currentStudentForRecords.membership_type }}</el-descriptions-item>
+          <el-descriptions-item label="课时进度">
+            <span class="text-blue-600 font-bold">
+              {{ (currentStudentForRecords.completed_courses !== undefined && currentStudentForRecords.completed_courses !== null) ? currentStudentForRecords.completed_courses : 0 }}/{{ getRequiredCourses(currentStudentForRecords.grade) }}
+            </span>
+          </el-descriptions-item>
+        </el-descriptions>
+      </div>
+      
+      <el-table
+        :data="courseRecords"
+        v-loading="loadingRecords"
+        size="small"
+        max-height="400"
+      >
+        <el-table-column prop="course_date" label="日期" width="100" />
+        <el-table-column prop="course_time" label="时间" width="80" />
+        <el-table-column label="操作来源" width="100">
+          <template #default="scope">
+            <el-tag :type="scope.row.operator_source === 'manager' ? 'warning' : 'success'" size="small">
+              {{ scope.row.operator_source === 'manager' ? '管理端' : '小程序' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="operator" label="操作人" width="100" />
+        <el-table-column label="扣减" width="80">
+          <template #default="scope">
+            <el-tag :type="scope.row.is_deducted ? 'danger' : 'info'" size="small">
+              {{ scope.row.is_deducted ? '是' : '否' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="剩余次数" width="100">
+          <template #default="scope">
+            {{ scope.row.remaining_count_before }} → {{ scope.row.remaining_count_after }}
+          </template>
+        </el-table-column>
+        <el-table-column label="累计课时" width="100">
+          <template #default="scope">
+            {{ scope.row.completed_courses_before }} → {{ scope.row.completed_courses_after }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="remark" label="备注" show-overflow-tooltip />
+      </el-table>
+      
+      <div class="flex justify-center mt-4" v-if="courseRecordTotal > courseRecordPageSize">
+        <el-pagination
+          v-model:current-page="courseRecordPage"
+          :page-size="courseRecordPageSize"
+          :total="courseRecordTotal"
+          layout="prev, pager, next"
+          @current-change="handleCourseRecordPageChange"
+        />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import {uploadFile,generateSignedUrl, getConfig,getStudents, addStudent, updateStudent, deleteStudent } from '../utils/cloudbase'
+import {uploadFile, generateSignedUrl, getConfig, getStudents, addStudent, updateStudent, deleteStudent, consumeCourse, getCourseRecords, resetCourseProgress } from '../utils/cloudbase'
 import dayjs from 'dayjs'
 
 // 状态变量
 const students = ref([])
 const searchKeyword = ref('')
+const filterMembershipType = ref('') // 会员类型筛选
+const filterStatus = ref('') // 状态筛选
 const loading = ref(false)
 const dialogVisible = ref(false)
 const isEdit = ref(false)
@@ -250,6 +429,15 @@ const loadingConfigs = ref(false) // 加载配置状态
 
 // 等级列表全局变量
 const gradeList = ref([])
+
+// 课时记录相关状态
+const courseRecordDialogVisible = ref(false)
+const currentStudentForRecords = ref(null)
+const courseRecords = ref([])
+const loadingRecords = ref(false)
+const courseRecordPage = ref(1)
+const courseRecordPageSize = ref(10)
+const courseRecordTotal = ref(0)
 
 // 学生表单
 const studentForm = ref({
@@ -263,8 +451,11 @@ const studentForm = ref({
   // 会员相关字段
   membership_type: '', // 会员类型：'按次' 或 '年卡'
   membership_name: '', // 会员卡名称
-  membership_price: 0, // 会员价格
+  membership_price: 0, // 会员价格（总价）
+  class_price: 0, // 单次课价格（新增）
+  purchased_count: 0, // 购买课时数（累计购买次数）
   remaining_count: 0, // 剩余次数
+  completed_courses: 0, // 已完成课时数
   membership_start_date: '', // 会员开始日期
   membership_end_date: '', // 会员结束日期
 })
@@ -289,13 +480,73 @@ const formRules = {
     { required: true, message: '请选择会员类型', trigger: 'change' }
   ],
   membership_start_date: [
-    { required: true, message: '请选择会员开始日期', trigger: 'change' }
+    { 
+      validator: (rule, value, callback) => {
+        if (studentForm.value.membership_type === '年卡') {
+          if (!value) {
+            callback(new Error('请选择会员开始日期'))
+          } else {
+            callback()
+          }
+        } else {
+          callback()
+        }
+      },
+      trigger: 'change'
+    }
   ],
   membership_end_date: [
-    { required: true, message: '请选择会员结束日期', trigger: 'change' }
+    { 
+      validator: (rule, value, callback) => {
+        if (studentForm.value.membership_type === '年卡') {
+          if (!value) {
+            callback(new Error('请选择会员结束日期'))
+          } else {
+            callback()
+          }
+        } else {
+          callback()
+        }
+      },
+      trigger: 'change'
+    }
+  ],
+  purchased_count: [
+    { 
+      validator: (rule, value, callback) => {
+        if (studentForm.value.membership_type === '按次') {
+          if (!value && value !== 0) {
+            callback(new Error('请输入购买次数'))
+          } else if (value < 1) {
+            callback(new Error('最低购买1次'))
+          } else {
+            callback()
+          }
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
   ],
   remaining_count: [
-    { required: true, message: '请输入剩余次数', trigger: 'blur' }
+    { 
+      validator: (rule, value, callback) => {
+        // 剩余次数是自动计算的，只需要确保有值即可
+        if (studentForm.value.membership_type === '按次') {
+          if (value === undefined || value === null || value === '') {
+            callback(new Error('剩余次数计算错误'))
+          } else if (value < 0) {
+            callback(new Error('剩余次数不能为负数'))
+          } else {
+            callback()
+          }
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
+    }
   ],
   status: [
     { required: true, message: '请选择状态', trigger: 'change' }
@@ -307,13 +558,33 @@ const formRules = {
 
 // 过滤后的学生列表
 const filteredStudents = computed(() => {
-  if (!searchKeyword.value) return students.value
+  let result = students.value
 
-  const keyword = searchKeyword.value.toLowerCase()
-  return students.value.filter(student =>
-    student.name.toLowerCase().includes(keyword) ||
-    student.phoneNumber.includes(keyword)
-  )
+  // 关键词搜索
+  if (searchKeyword.value) {
+    const keyword = searchKeyword.value.toLowerCase()
+    result = result.filter(student =>
+      student.name.toLowerCase().includes(keyword) ||
+      student.phoneNumber.includes(keyword)
+    )
+  }
+
+  // 会员类型筛选
+  if (filterMembershipType.value) {
+    result = result.filter(student =>
+      student.membership_type === filterMembershipType.value
+    )
+  }
+
+  // 状态筛选
+  if (filterStatus.value) {
+    result = result.filter(student => {
+      const status = getStatus(student)
+      return status === filterStatus.value
+    })
+  }
+
+  return result
 })
 
 // 根据选择的等级生成会员卡选项
@@ -369,6 +640,9 @@ const loadStudents = async () => {
 // 处理添加学生
 const handleAdd = () => {
   isEdit.value = false
+  originalGrade.value = '' // 清除原始等级
+  originalPurchasedCount.value = 0 // 清除原始购买次数
+  originalRemainingCount.value = 0 // 清除原始剩余次数
   resetForm()
   dialogVisible.value = true
 }
@@ -377,6 +651,9 @@ const handleAdd = () => {
 const handleEdit = async (student) => {
   isEdit.value = true
   resetForm()
+  
+  // 保存原始等级，用于检测等级变化
+  originalGrade.value = student.grade || ''
   
   // 处理头像URL转换
   let avatarUrl = student.avatar;
@@ -388,11 +665,60 @@ const handleEdit = async (student) => {
     }
   }
   
+  // 复制学生数据到表单
   Object.keys(studentForm.value).forEach(key => {
     if (key in student) {
       studentForm.value[key] = student[key]
     }
   })
+  
+  // 兼容历史数据：如果没有 purchased_count，使用 remaining_count 作为初始值
+  if (student.purchased_count === undefined || student.purchased_count === null) {
+    studentForm.value.purchased_count = student.remaining_count || 1
+  } else {
+    studentForm.value.purchased_count = student.purchased_count
+  }
+  
+  // 兼容历史数据：如果没有 class_price（单次课价格），使用配置的默认价格
+  if (student.class_price === undefined || student.class_price === null || student.class_price === 0) {
+    // 如果学生是按次会员且有会员价格和购买次数，尝试反推单次价格
+    if (student.membership_type === '按次' && student.membership_price && student.purchased_count) {
+      studentForm.value.class_price = Math.round((student.membership_price / student.purchased_count) * 100) / 100
+    } else {
+      studentForm.value.class_price = vipClassPrice.value || 0
+    }
+  } else {
+    studentForm.value.class_price = student.class_price
+  }
+  
+  // 兼容历史数据：如果没有 completed_courses，默认为 0
+  if (student.completed_courses === undefined || student.completed_courses === null) {
+    studentForm.value.completed_courses = 0
+  } else {
+    studentForm.value.completed_courses = student.completed_courses
+  }
+  
+  // 记录原始购买次数和剩余次数（用于自动计算）
+  // 这里应以表单中处理后的值为准，避免旧数据字段缺失导致原始值错误
+  originalPurchasedCount.value = studentForm.value.purchased_count || 0
+  originalRemainingCount.value = studentForm.value.remaining_count || 0
+  
+  console.log('========== 编辑学生信息 ==========');
+  console.log('学生姓名:', student.name);
+  console.log('当前等级:', student.grade);
+  console.log('已完成课时:', student.completed_courses);
+  console.log('记录原始值:', {
+    originalGrade: student.grade,
+    originalPurchasedCount: originalPurchasedCount.value,
+    originalRemainingCount: originalRemainingCount.value,
+    studentPurchasedCount: student.purchased_count,
+    studentRemainingCount: student.remaining_count,
+    formPurchasedCount: studentForm.value.purchased_count,
+    formRemainingCount: studentForm.value.remaining_count,
+    completedCourses: studentForm.value.completed_courses
+  });
+  console.log('====================================');
+  
   studentForm.value.grade = student.grade
   studentForm.value.avatar = avatarUrl; // 使用转换后的头像URL
   studentForm.value._id = student._id
@@ -425,6 +751,12 @@ const handleDelete = (student) => {
   }).catch(() => {})
 }
 
+// 保存编辑前的等级（用于检测等级变化）
+const originalGrade = ref('')
+// 保存编辑前的购买次数和剩余次数（用于自动计算剩余次数）
+const originalPurchasedCount = ref(0)
+const originalRemainingCount = ref(0)
+
 // 提交表单
 const submitForm = async () => {
   // 表单验证
@@ -442,12 +774,53 @@ const submitForm = async () => {
       studentData.remaining_count = Number(studentData.remaining_count);
     }
     
+    // 处理购买次数：按次会员必须有值，年卡会员设为0
+    if (studentData.membership_type === '按次') {
+      if (studentData.purchased_count !== undefined) {
+        studentData.purchased_count = Number(studentData.purchased_count);
+      } else {
+        // 如果没有设置，使用剩余次数作为购买次数（兼容历史数据）
+        studentData.purchased_count = Number(studentData.remaining_count || 1);
+      }
+      // 处理单次课价格
+      if (studentData.class_price !== undefined) {
+        studentData.class_price = Number(studentData.class_price);
+      } else {
+        studentData.class_price = 0;
+      }
+      // 按次会员不需要会员开始结束日期，清空避免提交无用数据
+      studentData.membership_start_date = '';
+      studentData.membership_end_date = '';
+    } else {
+      // 年卡会员购买次数为0
+      studentData.purchased_count = 0;
+      studentData.class_price = 0;
+    }
+    
+    // 处理已完成课时数：确保有值
+    if (studentData.completed_courses !== undefined && studentData.completed_courses !== null) {
+      studentData.completed_courses = Number(studentData.completed_courses);
+    } else {
+      studentData.completed_courses = 0;
+    }
+    
     // 确保布尔字段类型正确
     if (studentData.isActive !== undefined) {
       studentData.isActive = Boolean(studentData.isActive);
     }
     
+    // 检测是否等级发生变化（编辑模式）
+    // 注意：只有在编辑模式下，且原等级存在，且等级确实改变时才返回true
+    const gradeChanged = isEdit.value && originalGrade.value && (originalGrade.value !== studentData.grade);
+    
+    console.log('========== 提交学生信息 ==========');
     console.log('处理后的提交数据:', studentData);
+    console.log('是否编辑模式:', isEdit.value);
+    console.log('原等级:', originalGrade.value);
+    console.log('新等级:', studentData.grade);
+    console.log('等级是否变化:', gradeChanged);
+    console.log('已完成课时:', studentData.completed_courses);
+    console.log('====================================');
     
     // 根据当前是否为编辑模式调用相应的API
     const result = isEdit.value
@@ -455,7 +828,34 @@ const submitForm = async () => {
       : await addStudent(studentData)
 
     if (result.success) {
-      ElMessage.success(isEdit.value ? '更新成功' : '添加成功')
+      // 如果等级发生变化，重置课时进度
+      if (gradeChanged) {
+        console.log('⚠️ 等级变化，将重置课时进度...');
+        console.log('原等级:', originalGrade.value, '→ 新等级:', studentData.grade);
+        
+        // 二次确认是否真的要重置课时
+        await ElMessageBox.confirm(
+          `检测到等级从"${originalGrade.value}"变更为"${studentData.grade}"，这将重置该学生的已完成课时数为0。是否继续？`,
+          '等级变更确认',
+          {
+            confirmButtonText: '确定重置',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }
+        ).then(async () => {
+          const resetResult = await resetCourseProgress(studentData._id, studentData.grade);
+          if (resetResult.success) {
+            ElMessage.success('更新成功，已重置课时进度')
+          } else {
+            ElMessage.warning('更新成功，但课时进度重置失败：' + resetResult.message)
+          }
+        }).catch(() => {
+          ElMessage.info('已取消课时重置，但学生信息已更新')
+        });
+      } else {
+        console.log('✓ 等级未变化，已完成课时保持不变');
+        ElMessage.success(isEdit.value ? '更新成功' : '添加成功')
+      }
       dialogVisible.value = false
       loadStudents()
     } else {
@@ -482,8 +882,11 @@ const resetForm = () => {
     // 会员相关字段
     membership_type: '', // 会员类型：'按次' 或 '年卡'
     membership_name: '', // 会员卡名称
-    membership_price: 0, // 会员价格
+    membership_price: 0, // 会员价格（总价）
+    class_price: 0, // 单次课价格
+    purchased_count: 0, // 购买课时数
     remaining_count: 0, // 剩余次数
+    completed_courses: 0, // 已完成课时数
     membership_start_date: '', // 会员开始日期
     membership_end_date: '', // 会员结束日期
   }
@@ -580,26 +983,55 @@ const sortByMembershipDate = (a, b) => {
 }
 
 const getStatus = (row) => {
-  // 如果已经有status字段，直接使用
-  if (row.status) {
-    return row.status;
-  }
+  // 如果已经有status字段且不是根据日期计算的，直接使用
+  // 但我们需要根据实时数据计算，所以注释掉这部分
+  // if (row.status && row.status !== '正常' && row.status !== '已过期') {
+  //   return row.status;
+  // }
 
-  // 否则根据会员日期和剩余次数计算状态
+  // 根据会员日期和剩余次数计算状态
   const now = new Date()
   const start = row.membership_start_date ? new Date(row.membership_start_date) : null
   const end = row.membership_end_date ? new Date(row.membership_end_date) : null
   const remainingCount = row.remaining_count || 0
+  
+  // 计算距离到期的天数
+  const daysUntilExpire = end ? Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)) : null
 
-  if (start && end) {
-    if (now < start) return '未开始'
-    if (now > end) return '已过期'
-    if (remainingCount <= 0) return '次数用完'
-    return '正常'
+  // 优先判断是否已过期
+  if (end && now > end) {
+    return '已过期'
   }
-  if (end && now > end) return '已过期'
-  if (remainingCount <= 0) return '次数用完'
+  
+  // 判断是否未开始
+  if (start && now < start) {
+    return '未开始'
+  }
+  
+  // 判断次数是否用完（按次会员）
+  if (row.membership_type === '按次' && remainingCount <= 0) {
+    return '次数用完'
+  }
+  
+  // 判断是否即将到期（7天内）
+  if (daysUntilExpire !== null && daysUntilExpire > 0 && daysUntilExpire <= 7) {
+    return '即将到期'
+  }
+  
   return '正常'
+}
+
+// 获取状态标签类型
+const getStatusTagType = (row) => {
+  const status = getStatus(row)
+  const statusTypeMap = {
+    '正常': 'success',
+    '已过期': 'danger',
+    '即将到期': 'warning',
+    '次数用完': 'danger',
+    '未开始': 'info'
+  }
+  return statusTypeMap[status] || 'info'
 }
 
 const formatDateTime = (val) => {
@@ -641,12 +1073,41 @@ const handleMembershipTypeChange = (type) => {
   studentForm.value.membership_type = type
   
   if (type === '按次') {
-    // 默认设置为10次
-    studentForm.value.remaining_count = 10
-    studentForm.value.membership_price = vipClassPrice.value * 10
+    // 新建时默认设置单次价格和次数
+    if (!isEdit.value) {
+      studentForm.value.class_price = vipClassPrice.value || 0
+      studentForm.value.purchased_count = 1
+      studentForm.value.remaining_count = 1
+      // 记录原始值（新建时）
+      originalPurchasedCount.value = 1
+      originalRemainingCount.value = 1
+    } else {
+      // 编辑时，如果 class_price 未设置，使用配置的单次课价格
+      if (!studentForm.value.class_price || studentForm.value.class_price === 0) {
+        studentForm.value.class_price = vipClassPrice.value || 0
+      }
+      // 编辑时，如果 purchased_count 为0或未设置，默认设为1
+      if (!studentForm.value.purchased_count || studentForm.value.purchased_count === 0) {
+        studentForm.value.purchased_count = 1
+      }
+      // 如果剩余次数为0或未设置，且购买次数有值，则剩余次数等于购买次数
+      if ((!studentForm.value.remaining_count || studentForm.value.remaining_count === 0) && studentForm.value.purchased_count > 0) {
+        studentForm.value.remaining_count = studentForm.value.purchased_count
+      }
+      // 重新记录原始值（切换会员类型时）
+      originalPurchasedCount.value = studentForm.value.purchased_count
+      originalRemainingCount.value = studentForm.value.remaining_count || 0
+    }
+    // 计算总价 = 单次价格 × 购买次数
+    studentForm.value.membership_price = studentForm.value.class_price * studentForm.value.purchased_count
     studentForm.value.membership_name = '按次卡'
+    // 按次会员不需要会员日期，清空
+    studentForm.value.membership_start_date = ''
+    studentForm.value.membership_end_date = ''
   } else if (type === '年卡') {
+    studentForm.value.purchased_count = 0 // 年卡不计购买次数
     studentForm.value.remaining_count = 0 // 年卡不计次数
+    studentForm.value.class_price = 0 // 年卡不计单次价格
     // 如果已选择等级且有对应的年卡价格
     if (studentForm.value.grade && gradeYearCardOptions.value.length > 0) {
       const yearCardOption = gradeYearCardOptions.value[0];
@@ -662,24 +1123,209 @@ const handleYearCardChange = (yearPrice) => {
   studentForm.value.membership_price = Number(yearPrice)
 }
 
-// 处理按次数量变更
-const handleCountChange = (count) => {
-  if (count < 10) {
-    ElMessage.warning('最少购买10次课')
-    studentForm.value.remaining_count = 10
+// 处理购买次数变更
+const handlePurchasedCountChange = (count) => {
+  console.log('购买次数变更回调，新值:', count, '原始值:', originalPurchasedCount.value, originalRemainingCount.value)
+  
+  if (count < 1) {
+    ElMessage.warning('最低购买1次')
+    studentForm.value.purchased_count = 1
+    count = 1 // 确保使用修正后的值
   }
-  // 更新价格
-  studentForm.value.membership_price = studentForm.value.remaining_count * vipClassPrice.value
+  
+  // 更新价格（使用单次价格 × 购买次数）
+  studentForm.value.membership_price = count * (studentForm.value.class_price || 0)
+  
+  // 自动计算剩余次数
+  if (!isEdit.value) {
+    // 新建学生：剩余次数直接等于购买次数
+    studentForm.value.remaining_count = count
+  } else {
+    // 编辑学生：根据已消费次数自动计算
+    // 已消费次数 = 原始购买次数 - 原始剩余次数
+    const consumedCount = originalPurchasedCount.value - originalRemainingCount.value
+    // 新剩余次数 = 新购买次数 - 已消费次数
+    const newRemainingCount = count - consumedCount
+    // 确保剩余次数不为负数
+    studentForm.value.remaining_count = Math.max(0, newRemainingCount)
+    
+    console.log('购买次数变更计算:', {
+      originalPurchasedCount: originalPurchasedCount.value,
+      originalRemainingCount: originalRemainingCount.value,
+      newPurchasedCount: count,
+      consumedCount: consumedCount,
+      calculatedRemainingCount: newRemainingCount,
+      finalRemainingCount: studentForm.value.remaining_count
+    })
+  }
+}
+
+// 处理单次价格变更
+const handleClassPriceChange = (price) => {
+  if (price < 0) {
+    ElMessage.warning('单次价格不能小于0')
+    studentForm.value.class_price = 0
+    price = 0
+  }
+  
+  // 更新总价 = 单次价格 × 购买次数
+  studentForm.value.membership_price = price * (studentForm.value.purchased_count || 0)
+  
+  console.log('单次价格变更:', {
+    classPrice: price,
+    purchasedCount: studentForm.value.purchased_count,
+    totalPrice: studentForm.value.membership_price
+  })
+}
+
+// 处理剩余次数变更
+const handleCountChange = (count) => {
+  if (count < 0) {
+    ElMessage.warning('剩余次数不能小于0')
+    studentForm.value.remaining_count = 0
+  }
+  // 注意：剩余次数变更不影响价格，价格由购买次数和单次价格决定
 }
 
 // 监听等级变化
 watch(() => studentForm.value.grade, (newGrade) => {
-  if (studentForm.value.membership_type === '年卡' && gradeYearCardOptions.value.length > 0) {
+  if (newGrade && studentForm.value.membership_type === '年卡' && gradeYearCardOptions.value.length > 0) {
     const yearCardOption = gradeYearCardOptions.value[0];
     studentForm.value.membership_name = yearCardOption.value;
     studentForm.value.membership_price = Number(yearCardOption.price);
   }
+  // 等级变化时，所需课时数会自动通过 getRequiredCourses 计算，无需手动更新
 })
+
+// 获取等级所需课时
+const getRequiredCourses = (grade) => {
+  if (!grade || !gradeList.value.length) return 0
+  const gradeConfig = gradeList.value.find(g => g.name === grade)
+  return gradeConfig?.courses || 0
+}
+
+// 计算课时进度百分比
+const getCourseProgressPercent = (row) => {
+  // 兼容历史数据：如果 completed_courses 字段不存在，默认为 0
+  const completed = (row.completed_courses !== undefined && row.completed_courses !== null) 
+    ? row.completed_courses 
+    : 0
+  const required = getRequiredCourses(row.grade)
+  if (required <= 0) return 0
+  return Math.min(Math.round((completed / required) * 100), 100)
+}
+
+// 处理消课
+const handleConsumeCourse = async (student) => {
+  // 检查次卡会员剩余次数
+  if (student.membership_type === '按次' && (student.remaining_count || 0) <= 0) {
+    ElMessage.warning('该学生课时次数不足，无法消课')
+    return
+  }
+  
+  // 先检查今日是否已消课
+  const progressRes = await getCourseRecords(student._id, 1, 100)
+  if (progressRes.success && progressRes.data && progressRes.data.list) {
+    const today = dayjs().format('YYYY-MM-DD')
+    const todayRecords = progressRes.data.list.filter(r => r.course_date === today)
+    
+    if (todayRecords.length > 0) {
+      // 今日已消课，弹出确认
+      ElMessageBox.confirm(
+        `该学生今日已消课 ${todayRecords.length} 次，是否继续消课？`,
+        '重复消课确认',
+        {
+          confirmButtonText: '继续消课',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).then(() => {
+        doConsumeCourse(student, true)
+      }).catch(() => {})
+      return
+    }
+  }
+  
+  // 首次消课确认
+  ElMessageBox.confirm(
+    `确定为学生"${student.name}"消课吗？\n会员类型：${student.membership_type}\n${student.membership_type === '按次' ? '剩余次数：' + (student.remaining_count || 0) + '次' : '年卡会员不扣次数'}`,
+    '消课确认',
+    {
+      confirmButtonText: '确定消课',
+      cancelButtonText: '取消',
+      type: 'info'
+    }
+  ).then(() => {
+    doConsumeCourse(student, false)
+  }).catch(() => {})
+}
+
+// 执行消课
+const doConsumeCourse = async (student, confirmRepeat) => {
+  try {
+    const result = await consumeCourse(student._id, '管理员', '', confirmRepeat)
+    
+    if (result.success) {
+      ElMessage.success(`消课成功！已完成课时：${result.data.completed_courses}`)
+      // 刷新学生列表
+      loadStudents()
+    } else if (result.needConfirm) {
+      // 需要确认重复消课
+      ElMessageBox.confirm(
+        result.message,
+        '重复消课确认',
+        {
+          confirmButtonText: '继续消课',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).then(() => {
+        doConsumeCourse(student, true)
+      }).catch(() => {})
+    } else {
+      ElMessage.error(result.message || '消课失败')
+    }
+  } catch (error) {
+    console.error('消课失败:', error)
+    ElMessage.error('消课失败')
+  }
+}
+
+// 查看课时记录
+const handleViewCourseRecords = async (student) => {
+  currentStudentForRecords.value = student
+  courseRecordPage.value = 1
+  courseRecordDialogVisible.value = true
+  await loadCourseRecords(student._id)
+}
+
+// 加载课时记录
+const loadCourseRecords = async (studentId) => {
+  loadingRecords.value = true
+  try {
+    const result = await getCourseRecords(studentId, courseRecordPage.value, courseRecordPageSize.value)
+    if (result.success && result.data) {
+      courseRecords.value = result.data.list || []
+      courseRecordTotal.value = result.data.total || 0
+    } else {
+      courseRecords.value = []
+      courseRecordTotal.value = 0
+    }
+  } catch (error) {
+    console.error('加载课时记录失败:', error)
+    courseRecords.value = []
+  } finally {
+    loadingRecords.value = false
+  }
+}
+
+// 课时记录分页
+const handleCourseRecordPageChange = (page) => {
+  courseRecordPage.value = page
+  if (currentStudentForRecords.value) {
+    loadCourseRecords(currentStudentForRecords.value._id)
+  }
+}
 
 onMounted(() => {
   loadStudents()
@@ -696,5 +1342,81 @@ onMounted(() => {
 .el-button--small {
   padding: 3px 10px;
   font-size: 13px;
+}
+.course-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.course-progress .progress-text {
+  font-size: 12px;
+  color: #606266;
+  font-weight: 500;
+}
+.course-progress .el-progress {
+  width: 100%;
+}
+.flex {
+  display: flex;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.items-center {
+  align-items: center;
+}
+.gap-2 {
+  gap: 8px;
+}
+.gap-3 {
+  gap: 12px;
+}
+.flex-1 {
+  flex: 1;
+}
+.text-2xl {
+  font-size: 24px;
+}
+.font-bold {
+  font-weight: bold;
+}
+.text-gray-500 {
+  color: #909399;
+}
+.text-gray-600 {
+  color: #606266;
+}
+.text-blue-600 {
+  color: #409EFF;
+}
+.text-xs {
+  font-size: 12px;
+}
+.mt-1 {
+  margin-top: 4px;
+}
+.mb-4 {
+  margin-bottom: 16px;
+}
+.mb-6 {
+  margin-bottom: 24px;
+}
+.mr-2 {
+  margin-right: 8px;
+}
+.mr-4 {
+  margin-right: 16px;
+}
+.w-32 {
+  width: 128px;
+}
+.w-60 {
+  width: 240px;
+}
+.w-72 {
+  width: 288px;
+}
+.w-full {
+  width: 100%;
 }
 </style>

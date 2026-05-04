@@ -1040,6 +1040,142 @@ export const deleteGradeExam = async (id) => {
   }
 }
 
+/**
+ * 通用云函数调用方法
+ * @param {string} functionName - 云函数名称
+ * @param {Object} data - 传递给云函数的数据
+ * @returns {Promise<Object>} 云函数返回结果
+ */
+export const callFunction = async (functionName, data = {}) => {
+  try {
+    const res = await app.callFunction({
+      name: functionName,
+      data: data
+    });
+    
+    if (res.result) {
+      return res.result;
+    }
+    
+    return {
+      success: false,
+      message: '云函数调用失败'
+    };
+  } catch (error) {
+    console.error(`调用云函数 ${functionName} 失败:`, error);
+    return {
+      success: false,
+      message: error.message || '云函数调用失败'
+    };
+  }
+}
+
+/**
+ * 获取配置列表（getConfig的别名，支持复数形式）
+ * @param {string|Array} type - 配置类型
+ * @returns {Promise<Array>} 配置列表
+ */
+export const getConfigs = async (type = 'belt_level') => {
+  return await getConfig(type);
+}
+
+/**
+ * 消课功能
+ * @param {string} studentId - 学生ID
+ * @param {string} operator - 操作人名称
+ * @param {string} remark - 备注
+ * @param {boolean} confirmRepeat - 确认重复消课
+ * @returns {Promise<Object>} 消课结果
+ */
+export const consumeCourse = async (studentId, operator = '管理员', remark = '', confirmRepeat = false) => {
+  try {
+    const res = await app.callFunction({
+      name: 'taekwondoFunctions',
+      data: {
+        type: 'consumeCourse',
+        studentId,
+        operatorSource: 'manager',
+        operator,
+        remark,
+        confirmRepeat
+      }
+    });
+    return res.result || { success: false, message: '消课失败' };
+  } catch (error) {
+    console.error('消课失败:', error);
+    return { success: false, message: error.message || '消课失败' };
+  }
+}
+
+/**
+ * 获取课时消费记录
+ * @param {string} studentId - 学生ID
+ * @param {number} page - 页码
+ * @param {number} pageSize - 每页条数
+ * @returns {Promise<Object>} 记录列表
+ */
+export const getCourseRecords = async (studentId, page = 1, pageSize = 20) => {
+  try {
+    const res = await app.callFunction({
+      name: 'taekwondoFunctions',
+      data: {
+        type: 'getCourseRecords',
+        studentId,
+        page,
+        pageSize
+      }
+    });
+    return res.result || { success: false, message: '获取记录失败' };
+  } catch (error) {
+    console.error('获取课时记录失败:', error);
+    return { success: false, message: error.message || '获取记录失败' };
+  }
+}
+
+/**
+ * 获取课时进度
+ * @param {string} studentId - 学生ID
+ * @returns {Promise<Object>} 课时进度信息
+ */
+export const getCourseProgress = async (studentId) => {
+  try {
+    const res = await app.callFunction({
+      name: 'taekwondoFunctions',
+      data: {
+        type: 'getCourseProgress',
+        studentId
+      }
+    });
+    return res.result || { success: false, message: '获取进度失败' };
+  } catch (error) {
+    console.error('获取课时进度失败:', error);
+    return { success: false, message: error.message || '获取进度失败' };
+  }
+}
+
+/**
+ * 重置课时进度（考级升级后调用）
+ * @param {string} studentId - 学生ID
+ * @param {string} newGrade - 新等级（可选）
+ * @returns {Promise<Object>} 重置结果
+ */
+export const resetCourseProgress = async (studentId, newGrade = '') => {
+  try {
+    const res = await app.callFunction({
+      name: 'taekwondoFunctions',
+      data: {
+        type: 'resetCourseProgress',
+        studentId,
+        newGrade
+      }
+    });
+    return res.result || { success: false, message: '重置失败' };
+  } catch (error) {
+    console.error('重置课时进度失败:', error);
+    return { success: false, message: error.message || '重置失败' };
+  }
+}
+
 export default {
   app,
   auth,

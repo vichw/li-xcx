@@ -43,6 +43,48 @@ const routes = [
         name: 'ExportGradeExam',
         component: () => import('../views/ExportGradeExam.vue'),
         meta: { title: '导出成绩' }
+      },
+      {
+        path: 'competition',
+        name: 'Competition',
+        component: () => import('../views/Competition.vue'),
+        meta: { title: '比赛管理' }
+      },
+      {
+        path: 'group-config',
+        name: 'GroupConfig',
+        component: () => import('../views/GroupConfig.vue'),
+        meta: { title: '分组规则配置' }
+      },
+      {
+        path: 'competition/:id/groups',
+        name: 'CompetitionGroups',
+        component: () => import('../views/CompetitionGroups.vue'),
+        meta: { title: '分组管理' }
+      },
+      {
+        path: 'competition/:id/registration',
+        name: 'CompetitionRegistration',
+        component: () => import('../views/CompetitionRegistration.vue'),
+        meta: { title: '报名管理' }
+      },
+      {
+        path: 'competition/:id/bracket',
+        name: 'CompetitionBracket',
+        component: () => import('../views/CompetitionBracket.vue'),
+        meta: { title: '对战表管理' }
+      },
+      {
+        path: 'competition/:id/result',
+        name: 'CompetitionResult',
+        component: () => import('../views/CompetitionResult.vue'),
+        meta: { title: '结果管理' }
+      },
+      {
+        path: 'feedback',
+        name: 'Feedback',
+        component: () => import('../views/Feedback.vue'),
+        meta: { title: '投诉建议' }
       }
     ]
   },

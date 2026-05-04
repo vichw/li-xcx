@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tail -c 300 \"d:\\\\\\\\qt\\\\\\\\li\\\\\\\\20250414\\\\\\\\20250414\\\\\\\\code\\\\\\\\cloudfunctions\\\\\\\\competitionFunctions\\\\\\\\index.js\")",
+      "Bash(git checkout *)",
+      "Bash(cd \"d:\\\\\\\\qt\\\\\\\\li\\\\\\\\20250414\\\\\\\\20250414\")"
+    ]
+  }
+}
