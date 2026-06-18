@@ -1,0 +1,103 @@
+﻿<view class="container">
+  <!-- 顶部标题 -->
+  <view class="header">
+    <image class="header-bg" src="/images/taekwondo-bg.jpg" mode="aspectFill"></image>
+    
+  </view>
+
+  <!-- 报名说明 -->
+  <view class="info-section">
+   
+    <view class="info-item">
+      <view class="info-icon"></view>
+      <view class="info-text">出拳是力量，防守是冷静，移动是敏捷，反击是果断，对抗是勇气，战术是智慧，进攻是主动，忍耐是坚韧，训练是坚持，获胜是荣耀，失败是成长，礼仪是尊重，规则是底线，搏击教育就是在潜移默化中培养孩子的品格。</view>
+    </view>
+    <view class="info-item">
+      <view class="info-icon"></view>
+      <view class="info-text">招生对象：4岁以上的青少年和成人，无年龄上限</view>
+    </view>
+    <view class="info-item">
+      <view class="info-icon"></view>
+      <view class="info-text">训练时间：周一至周五18:00-20:00，周末全天</view>
+    </view>
+  </view>
+
+  <!-- 报名方式 -->
+  <view class="register-section">
+    <view class="section-title">报名方式</view>
+    
+    <!-- 电话报名 -->
+    <view class="register-card">
+      <view class="card-title">
+        <image class="card-icon" src="/images/phone.png"></image>
+        <text>电话报名</text>
+      </view>
+      <view class="card-content">
+        <text class="card-text">点击下方按钮拨打报名电话</text>
+        <button class="action-btn phone-btn" bindtap="makePhoneCall">拨打报名电话</button>
+      </view>
+    </view>
+    
+    <!-- 在线报名 -->
+    <view class="register-card">
+      <view class="card-title">
+        <image class="card-icon" src="/images/online.png"></image>
+        <text>在线报名</text>
+      </view>
+      <view class="card-content">
+        <view class="input-group">
+          <text class="input-label">联系电话</text>
+          <input class="input-field" type="number" maxlength="11" placeholder="请输入您的手机号码" value="{{phoneNumber}}" bindinput="inputPhoneNumber" />
+        </view>
+        
+        <!-- 用户协议勾选 -->
+        <view class="agreement-box">
+          <checkbox-group bindchange="onAgreementChange">
+            <view class="agreement-wrapper">
+              <label class="checkbox-wrapper">
+                <checkbox value="agree" checked="{{agreedToTerms}}" color="#FF5722"/>
+              </label>
+              <view class="agreement-text-wrapper">
+                <text class="agreement-text">我已阅读并同意</text>
+                <text class="agreement-link" catchtap="viewServiceAgreement">《用户服务协议》</text>
+                <text class="agreement-text">和</text>
+                <text class="agreement-link" catchtap="viewPrivacyPolicy">《隐私政策》</text>
+              </view>
+            </view>
+          </checkbox-group>
+        </view>
+        
+        <button class="action-btn register-btn" bindtap="submitRegistration">提交报名</button>
+      </view>
+    </view>
+    
+    <!-- 微信报名 -->
+    <view class="register-card">
+      <view class="card-title">
+        <image class="card-icon" src="/images/wechat.png"></image>
+        <text>微信报名</text>
+      </view>
+      <view class="card-content qrcode-content">
+        <text class="card-text">扫描下方二维码，添加教练微信报名</text>
+        
+        <!-- 加载中状态 -->
+        <view class="loading-container" wx:if="{{loading}}">
+          <image class="loading-image" src="/images/loading.gif"></image>
+          <text class="loading-text">正在加载二维码...</text>
+        </view>
+        
+        <!-- 二维码显示 -->
+        <block wx:else>
+          <image class="qrcode-image" src="{{qrCodeUrl || '/images/temp-qrcode.png'}}" mode="aspectFit"></image>
+          <button class="action-btn save-btn" bindtap="saveQrCode">保存二维码</button>
+        </block>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 底部版权信息 -->
+  <view class="footer">
+    <text> 2025 荣誉榜 - 版权所有</text>
+  </view>
+
+</view>

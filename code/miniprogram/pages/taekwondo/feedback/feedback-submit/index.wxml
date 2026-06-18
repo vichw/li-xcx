@@ -1,0 +1,160 @@
+<!--pages/feedback/feedback-submit/index.wxml-->
+<view class="container">
+
+
+  <!-- 类型选择 -->
+  <view class="type-tabs">
+    <view 
+      class="tab-item {{feedbackType === 'complaint' ? 'active' : ''}}"
+      bindtap="onTypeChange"
+      data-type="complaint"
+    >
+      <text>投诉</text>
+    </view>
+    <view 
+      class="tab-item {{feedbackType === 'suggestion' ? 'active' : ''}}"
+      bindtap="onTypeChange"
+      data-type="suggestion"
+    >
+      <text>建议</text>
+    </view>
+  </view>
+
+  <!-- 表单区域 -->
+  <view class="form-container">
+    <!-- 类别选择 -->
+    <view class="form-item">
+      <view class="label">
+        <text class="required">*</text>
+        <text>类别</text>
+      </view>
+      <picker 
+        mode="selector"
+        range="{{categories}}"
+        range-key="name"
+        bindchange="onCategoryChange"
+        value="{{formData.category}}"
+      >
+        <view class="picker">
+          <text class="{{formData.category ? '' : 'placeholder'}}">
+            {{formData.category_name || '请选择类别'}}
+          </text>
+          <text class="arrow">▼</text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 标题 -->
+    <view class="form-item">
+      <view class="label">
+        <text class="required">*</text>
+        <text>标题</text>
+      </view>
+      <input
+        class="input"
+        placeholder="请输入标题（{{titleMaxLength}}字内）"
+        value="{{formData.title}}"
+        maxlength="{{titleMaxLength}}"
+        bindinput="onTitleInput"
+      />
+      <view class="counter">
+        <text>{{formData.title.length}}/{{titleMaxLength}}</text>
+      </view>
+    </view>
+
+    <!-- 详细描述 -->
+    <view class="form-item">
+      <view class="label">
+        <text class="required">*</text>
+        <text>详细描述</text>
+      </view>
+      <textarea
+        class="textarea"
+        placeholder="请详细描述您的问题或建议（{{contentMaxLength}}字内）"
+        value="{{formData.content}}"
+        maxlength="{{contentMaxLength}}"
+        bindinput="onContentInput"
+        auto-height
+      />
+      <view class="counter">
+        <text>{{formData.content.length}}/{{contentMaxLength}}</text>
+      </view>
+    </view>
+
+    <!-- 图片上传 -->
+    <view class="form-item">
+      <view class="label">
+        <text>图片</text>
+        <text class="hint">（选填，最多{{maxImages}}张）</text>
+      </view>
+      <view class="image-list">
+        <block wx:for="{{formData.images}}" wx:key="index">
+          <view class="image-item">
+            <image 
+              src="{{item}}" 
+              mode="aspectFill"
+              bindtap="previewImage"
+              data-index="{{index}}"
+            />
+            <view 
+              class="delete-btn"
+              catchtap="deleteImage"
+              data-index="{{index}}"
+            >
+              <text>×</text>
+            </view>
+          </view>
+        </block>
+        
+        <view 
+          wx:if="{{formData.images.length < maxImages}}"
+          class="image-add"
+          bindtap="chooseImage"
+        >
+          <text class="icon">+</text>
+          <text class="text">添加图片</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="form-item">
+      <view class="label">
+        <text class="required">*</text>
+        <text>联系方式</text>
+      </view>
+      <input
+        class="input"
+        type="number"
+        placeholder="请输入手机号"
+        value="{{formData.user_phone}}"
+        maxlength="11"
+        bindinput="onPhoneInput"
+      />
+    </view>
+
+    <!-- 提交人 -->
+    <view class="form-item">
+      <view class="label">
+        <text>提交人</text>
+      </view>
+      <view class="readonly-text">
+        <text>{{formData.user_name || '当前用户'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-container">
+    <button class="submit-btn" bindtap="submitFeedback">提交</button>
+  </view>
+
+  <!-- 温馨提示 -->
+  <view class="tips">
+    <view class="tips-title">温馨提示：</view>
+    <view class="tips-item">• 请如实填写反馈信息，我们会认真处理您的每一条反馈</view>
+    <view class="tips-item">• 提交后可在"我的投诉建议"中查看处理进度</view>
+    <view class="tips-item">• 我们会在1-3个工作日内给予回复</view>
+  </view>
+</view>
+

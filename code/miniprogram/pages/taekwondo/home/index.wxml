@@ -1,0 +1,113 @@
+<view class="container">
+  <!-- 顶部横幅 -->
+  <view class="banner">
+    <image class="banner-image" src="/images/taekwondo-banner.jpg" mode="aspectFill"></image>
+    <view class="banner-title">荣誉榜</view>
+  </view>
+  
+
+
+  <!-- 搜索框 -->
+  <view class="search-container">
+    <view class="search-box">
+      <image class="search-icon" src="/images/search.png"></image>
+      <input class="search-input" placeholder="输入姓名或手机号搜索" 
+      model:value="{{searchKeyword}}" 
+      confirm-type="search" bindconfirm="searchHonors"/>
+      <view class="search-btn" bindtap="searchHonors">搜索</view>
+    </view>
+  </view>
+  
+  <!-- 荣誉榜列表 -->
+  <view class="honor-list-title">
+    <text class="title-text">学员荣誉墙</text>
+    <view class="title-line"></view>
+  </view>
+  
+  <!-- 加载中状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <image class="loading-image" src="/images/loading.gif"></image>
+    <text class="loading-text">正在加载荣誉榜...</text>
+  </view>
+  
+  <!-- 空数据状态 -->
+  <view class="empty-container" wx:if="{{!loading && honors.length === 0}}">
+    <image class="empty-image" src="/images/empty.png"></image>
+    <text class="empty-text">暂无荣誉记录</text>
+  </view>
+  
+
+  <!-- 荣誉列表 -->
+  <view class="honor-list" wx:if="{{!loading && honors.length > 0}}">
+    <view class="honor-item" wx:for="{{honors}}" wx:key="_id"  data-id="{{item._id}}">
+      <!-- 左侧学员头像 -->
+      <view class="student-info">
+        <view class="avatar-container">
+          <image 
+            wx:if="{{!item.avatarLoadError}}"
+            class="student-avatar" 
+            src="{{item.studentAvatar}}" 
+            mode="aspectFill"
+            binderror="onAvatarError"
+            data-index="{{index}}"
+          ></image>
+          <view 
+            wx:else 
+            class="text-avatar" 
+            style="background-color: {{item.avatarColor || '#CCCCCC'}};"
+          >{{item.studentName ? item.studentName.charAt(0) : '?'}}</view>
+        </view>
+        <view class="student-details">
+          <view class="student-name">{{item.studentName}}</view>
+          <view 
+            class="student-grade"
+            
+          >
+          {{item.studentGrade || '未定级'}}
+          </view>
+        </view>
+      </view>
+      
+      <!-- 右侧荣誉信息 -->
+      <view class="honor-info">
+        <!-- 奖牌图标 -->
+        <view class="award-header">
+          <image 
+            class="medal-icon" 
+            src="{{item.rank === 'gold' ? '/images/medal-gold.png' : (item.rank === 'silver' ? '/images/medal-silver.png' : '/images/medal-bronze.png')}}" 
+            mode="aspectFit"
+          ></image>
+          <view class="honor-title">{{item.awardName}}</view>
+        </view>
+        <view class="award-body">
+          <view class="award-body-left">
+               <image class="belt-avatar" src="{{item.gradeImg}}" mode="aspectFill"></image>
+               
+                 
+                 
+            
+          </view>
+          <view class="award-body-right">
+            <view class="honor-subtitle">{{item.competitionName}}</view>
+          
+        <view class="honor-date">{{item.competitionDate}}</view>
+        
+        <!-- 热度和分享区域 -->
+        <view class="honor-footer">
+          <view class="heat-info">
+            <image class="heat-icon" src="/images/fire.png"></image>
+            <text class="heat-value">{{item.heatValue ? item.heatValue : 0}}</text>
+          </view>
+          
+          <!-- 分享按钮 -->
+          <button class="share-btn" open-type="share" data-id="{{item._id}}" bindtap="shareHonor">
+            <image class="share-icon" src="/images/share.png"></image>
+            <text class="share-text">分享</text>
+          </button>
+        </view>	
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

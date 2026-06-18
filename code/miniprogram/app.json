@@ -1,0 +1,58 @@
+{
+  "pages": [
+    "pages/taekwondo/home/index",
+    "pages/taekwondo/register/index",
+    "pages/taekwondo/my/index",
+    "pages/taekwondo/grade-history/index",
+    "pages/taekwondo/course-records/index",
+    "pages/taekwondo/competition-list/index",
+    "pages/taekwondo/competition-detail/index",
+    "pages/taekwondo/competition-register/index",
+    "pages/taekwondo/feedback/feedback-list/index",
+    "pages/taekwondo/feedback/feedback-submit/index",
+    "pages/taekwondo/feedback/feedback-detail/index",
+    "pages/taekwondo/agreement/service-agreement",
+    "pages/taekwondo/agreement/privacy-policy"
+  ],
+  "window": {
+    "backgroundColor": "#1A237E",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1A237E",
+    "navigationBarTitleText": "荣誉榜",
+    "navigationBarTextStyle": "white"
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "tabBar": {
+    "color": "#A2A9B0",
+    "selectedColor": "#FF5722",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/taekwondo/home/index",
+        "text": "荣誉榜",
+        "iconPath": "images/icons/trophy.png",
+        "selectedIconPath": "images/icons/trophy-active.png"
+      },
+      {
+        "pagePath": "pages/taekwondo/register/index",
+        "text": "报名",
+        "iconPath": "images/icons/register.png",
+        "selectedIconPath": "images/icons/register-active.png"
+      },
+      {
+        "pagePath": "pages/taekwondo/competition-list/index",
+        "text": "赛事",
+        "iconPath": "images/icons/competition.png",
+        "selectedIconPath": "images/icons/competition-active.png"
+      },
+      {
+        "pagePath": "pages/taekwondo/my/index",
+        "text": "我的",
+        "iconPath": "images/icons/usercenter.png",
+        "selectedIconPath": "images/icons/usercenter-active.png"
+      }
+    ]
+  }
+}

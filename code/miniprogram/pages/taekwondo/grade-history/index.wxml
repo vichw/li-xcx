@@ -1,0 +1,56 @@
+<view class="container">
+  <scroll-view scroll-y="true" style="height: 80vh;">
+    <view wx:for="{{gradeExamHistory}}" wx:key="_id" class="history-item record-card">
+      <view class="item-row">
+        <text class="item-label label-bold">级别：</text>
+        <text class="item-value">{{item.next_grade}}</text>
+      </view>
+      <view class="item-row">
+        <text class="item-label label-bold">报名费：</text>
+        <text class="item-value">￥{{item.fee}}</text>
+      </view>
+      <view class="item-row">
+        <text class="item-label label-bold">缴费时间：</text>
+        <text class="item-value">{{item.pay_time_fmt}}</text>
+      </view>
+      <view class="item-row">
+        <text class="item-label label-bold">成绩明细：</text>
+      </view>
+      <view class="score-table">
+        <view class="score-table-header">
+          <text class="score-th">项目</text>
+          <text class="score-th">分数</text>
+          <text class="score-th">权重</text>
+        </view>
+        <view class="score-table-row">
+          <text class="score-td">行为素质</text>
+          <text class="score-td">{{item.score_behavior || '--'}}</text>
+          <text class="score-td">{{item.weight_behavior || '--'}}</text>
+        </view>
+        <view class="score-table-row">
+          <text class="score-td">专项技术</text>
+          <text class="score-td">{{item.score_tech || '--'}}</text>
+          <text class="score-td">{{item.weight_tech || '--'}}</text>
+        </view>
+        <view class="score-table-row">
+          <text class="score-td">身体素质</text>
+          <text class="score-td">{{item.score_physical || '--'}}</text>
+          <text class="score-td">{{item.weight_physical || '--'}}</text>
+        </view>
+        <view class="score-table-row">
+          <text class="score-td">总分</text>
+          <text class="score-td">{{item.score_total || '--'}}</text>
+          <text class="score-td"></text>
+        </view>
+      </view>
+      <view class="item-row">
+        <text class="item-label">状态：</text>
+        <text class="item-value">{{item.status == 1 ? '已完成' : '未完成'}}</text>
+      </view>
+      <view class="divider"></view>
+    </view>
+    <view wx:if="{{!gradeExamHistory.length}}">
+      <text>暂无历史考级记录</text>
+    </view>
+  </scroll-view>
+</view> 

@@ -1,0 +1,189 @@
+{
+  "name": "标准跆拳道分组规则",
+  "description": "按年龄、性别、体重三级分组（含成人组、高中组、初中组、小学甲乙丙组、幼儿组）",
+  "is_default": true,
+  "age_groups": [
+    {
+      "code": "adult",
+      "name": "成人组",
+      "age_min": 17,
+      "age_max": 999,
+      "gender_separated": true,
+      "weight_categories": {
+        "male": [
+          { "code": "w45", "label": "-45", "max": 45 },
+          { "code": "w50", "label": "-50", "max": 50 },
+          { "code": "w55", "label": "-55", "max": 55 },
+          { "code": "w60", "label": "-60", "max": 60 },
+          { "code": "w65", "label": "-65", "max": 65 },
+          { "code": "w70", "label": "-70", "max": 70 },
+          { "code": "w75", "label": "-75", "max": 75 },
+          { "code": "w80", "label": "-80", "max": 80 },
+          { "code": "w80plus", "label": "+80", "max": 999 }
+        ],
+        "female": [
+          { "code": "w45", "label": "-45", "max": 45 },
+          { "code": "w50", "label": "-50", "max": 50 },
+          { "code": "w55", "label": "-55", "max": 55 },
+          { "code": "w60", "label": "-60", "max": 60 },
+          { "code": "w65", "label": "-65", "max": 65 },
+          { "code": "w70", "label": "-70", "max": 70 },
+          { "code": "w75", "label": "-75", "max": 75 },
+          { "code": "w80", "label": "-80", "max": 80 },
+          { "code": "w80plus", "label": "+80", "max": 999 }
+        ]
+      }
+    },
+    {
+      "code": "high_school",
+      "name": "高中组",
+      "age_min": 15,
+      "age_max": 16,
+      "gender_separated": true,
+      "weight_categories": {
+        "male": [
+          { "code": "w45", "label": "-45", "max": 45 },
+          { "code": "w48", "label": "-48", "max": 48 },
+          { "code": "w51", "label": "-51", "max": 51 },
+          { "code": "w55", "label": "-55", "max": 55 },
+          { "code": "w59", "label": "-59", "max": 59 },
+          { "code": "w63", "label": "-63", "max": 63 },
+          { "code": "w68", "label": "-68", "max": 68 },
+          { "code": "w73", "label": "-73", "max": 73 },
+          { "code": "w78", "label": "-78", "max": 78 },
+          { "code": "w78plus", "label": "+78", "max": 999 }
+        ],
+        "female": [
+          { "code": "w42", "label": "-42", "max": 42 },
+          { "code": "w44", "label": "-44", "max": 44 },
+          { "code": "w46", "label": "-46", "max": 46 },
+          { "code": "w49", "label": "-49", "max": 49 },
+          { "code": "w52", "label": "-52", "max": 52 },
+          { "code": "w55", "label": "-55", "max": 55 },
+          { "code": "w59", "label": "-59", "max": 59 },
+          { "code": "w63", "label": "-63", "max": 63 },
+          { "code": "w68", "label": "-68", "max": 68 },
+          { "code": "w68plus", "label": "+68", "max": 999 }
+        ]
+      }
+    },
+    {
+      "code": "middle_school",
+      "name": "初中组",
+      "age_min": 13,
+      "age_max": 14,
+      "gender_separated": true,
+      "weight_categories": {
+        "male": [
+          { "code": "w42", "label": "-42", "max": 42 },
+          { "code": "w45", "label": "-45", "max": 45 },
+          { "code": "w48", "label": "-48", "max": 48 },
+          { "code": "w51", "label": "-51", "max": 51 },
+          { "code": "w55", "label": "-55", "max": 55 },
+          { "code": "w59", "label": "-59", "max": 59 },
+          { "code": "w63", "label": "-63", "max": 63 },
+          { "code": "w68", "label": "-68", "max": 68 },
+          { "code": "w73", "label": "-73", "max": 73 },
+          { "code": "w73plus", "label": "+73", "max": 999 }
+        ],
+        "female": [
+          { "code": "w40", "label": "-40", "max": 40 },
+          { "code": "w42", "label": "-42", "max": 42 },
+          { "code": "w44", "label": "-44", "max": 44 },
+          { "code": "w46", "label": "-46", "max": 46 },
+          { "code": "w49", "label": "-49", "max": 49 },
+          { "code": "w52", "label": "-52", "max": 52 },
+          { "code": "w55", "label": "-55", "max": 55 },
+          { "code": "w59", "label": "-59", "max": 59 },
+          { "code": "w63", "label": "-63", "max": 63 },
+          { "code": "w63plus", "label": "+63", "max": 999 }
+        ]
+      }
+    },
+    {
+      "code": "primary_a",
+      "name": "小学甲组",
+      "age_min": 11,
+      "age_max": 12,
+      "gender_separated": false,
+      "weight_categories": {
+        "mixed": [
+          { "code": "w27", "label": "-27", "max": 27 },
+          { "code": "w30", "label": "-30", "max": 30 },
+          { "code": "w33", "label": "-33", "max": 33 },
+          { "code": "w36", "label": "-36", "max": 36 },
+          { "code": "w39", "label": "-39", "max": 39 },
+          { "code": "w42", "label": "-42", "max": 42 },
+          { "code": "w45", "label": "-45", "max": 45 },
+          { "code": "w48", "label": "-48", "max": 48 },
+          { "code": "w51", "label": "-51", "max": 51 },
+          { "code": "w51plus", "label": "+51", "max": 999 }
+        ]
+      }
+    },
+    {
+      "code": "primary_b",
+      "name": "小学乙组",
+      "age_min": 9,
+      "age_max": 10,
+      "gender_separated": false,
+      "weight_categories": {
+        "mixed": [
+          { "code": "w22", "label": "-22", "max": 22 },
+          { "code": "w24", "label": "-24", "max": 24 },
+          { "code": "w27", "label": "-27", "max": 27 },
+          { "code": "w30", "label": "-30", "max": 30 },
+          { "code": "w33", "label": "-33", "max": 33 },
+          { "code": "w36", "label": "-36", "max": 36 },
+          { "code": "w39", "label": "-39", "max": 39 },
+          { "code": "w42", "label": "-42", "max": 42 },
+          { "code": "w45", "label": "-45", "max": 45 },
+          { "code": "w45plus", "label": "+45", "max": 999 }
+        ]
+      }
+    },
+    {
+      "code": "primary_c",
+      "name": "小学丙组",
+      "age_min": 7,
+      "age_max": 8,
+      "gender_separated": false,
+      "weight_categories": {
+        "mixed": [
+          { "code": "w20", "label": "-20", "max": 20 },
+          { "code": "w22", "label": "-22", "max": 22 },
+          { "code": "w24", "label": "-24", "max": 24 },
+          { "code": "w27", "label": "-27", "max": 27 },
+          { "code": "w30", "label": "-30", "max": 30 },
+          { "code": "w33", "label": "-33", "max": 33 },
+          { "code": "w36", "label": "-36", "max": 36 },
+          { "code": "w39", "label": "-39", "max": 39 },
+          { "code": "w42", "label": "-42", "max": 42 },
+          { "code": "w42plus", "label": "+42", "max": 999 }
+        ]
+      }
+    },
+    {
+      "code": "kindergarten",
+      "name": "幼儿组",
+      "age_min": 5,
+      "age_max": 6,
+      "gender_separated": false,
+      "weight_categories": {
+        "mixed": [
+          { "code": "w18", "label": "-18", "max": 18 },
+          { "code": "w20", "label": "-20", "max": 20 },
+          { "code": "w22", "label": "-22", "max": 22 },
+          { "code": "w24", "label": "-24", "max": 24 },
+          { "code": "w27", "label": "-27", "max": 27 },
+          { "code": "w30", "label": "-30", "max": 30 },
+          { "code": "w33", "label": "-33", "max": 33 },
+          { "code": "w36", "label": "-36", "max": 36 },
+          { "code": "w39", "label": "-39", "max": 39 },
+          { "code": "w39plus", "label": "+39", "max": 999 }
+        ]
+      }
+    }
+  ]
+}
+

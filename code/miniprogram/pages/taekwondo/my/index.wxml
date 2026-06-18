@@ -1,0 +1,321 @@
+<view class="container">
+  
+
+  <!-- 未登录状态 -->
+  <block wx:if="{{!isLogin}}">
+    <view class="login-container">
+      <image class="login-bg" src="/images/taekwondo-bg.jpg" mode="aspectFill"></image>
+      <view class="login-content">
+        <image class="login-logo" src="/images/logo.jpg"></image>
+        
+        <view class="login-subtitle">登录后查看个人荣誉和会员信息</view>
+        
+        <view class="login-form">
+          <view class="input-group">
+            <image class="input-icon" src="/images/phone.png"></image>
+            <input class="input-field" model:value="{{phoneNumber}}"  type="number" maxlength="11" placeholder="请输入手机号码"  />
+          </view>
+          
+          <!-- 用户协议勾选 -->
+          <view class="agreement-box">
+            <checkbox-group bindchange="onAgreementChange">
+              <view class="agreement-wrapper">
+                <label class="checkbox-wrapper">
+                  <checkbox value="agree" checked="{{agreedToTerms}}" color="#667eea"/>
+                </label>
+                <view class="agreement-text-wrapper">
+                  <text class="agreement-text">我已阅读并同意</text>
+                  <text class="agreement-link" catchtap="viewServiceAgreement">《用户服务协议》</text>
+                  <text class="agreement-text">和</text>
+                  <text class="agreement-link" catchtap="viewPrivacyPolicy">《隐私政策》</text>
+                </view>
+              </view>
+            </checkbox-group>
+          </view>
+          
+          <button class="login-btn" bindtap="doLogin">登 录</button>
+        </view>
+      </view>
+    </view>
+  </block>
+  
+  <!-- 已登录状态 -->
+  <block wx:else>
+    <!-- 用户信息区域 -->
+    <view class="user-header">
+      <image class="user-bg" src="/images/taekwondo-bg.jpg" mode="aspectFill"></image>
+      <view class="user-info">
+        <image class="user-avatar" src="{{userInfo.avatar || '/images/avatar.png'}}" mode="aspectFill"></image>
+        <view class="user-details">
+          <view class="user-name">{{userInfo.name || '未设置姓名'}}</view>
+          <view class="user-phone">{{userInfo.phoneNumber}}</view>
+        </view>
+        <!-- 段位显示 -->
+        <view class="user-belt-container">
+          <image class="belt-avatar" src="{{userInfo.gradeImg}}" mode="aspectFill"></image>
+          <text class="user-belt-text">{{userInfo.grade || '未定级'}}</text>
+        </view>
+        
+      </view>
+    </view>
+    
+    <!-- 会员信息卡片 -->
+    <view class="info-card">
+      <view class="card-title">
+        <image class="card-icon" src="/images/member-icon.png"></image>
+        <text>会员信息</text>
+        <image class="edit-icon" style="margin-right: 10rpx;" src="/images/edit.png" bindtap="showEditForm"></image>
+      </view>
+      <view class="card-content">
+        <!-- 会员类型和价格 -->
+        <view class="info-item">
+          <text class="info-label">会员类型</text>
+          <text class="info-value">{{userInfo.membership_type || '未设置'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">会员卡名称</text>
+          <text class="info-value">{{userInfo.membership_name || '未设置'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">会员费用</text>
+          <text class="info-value">￥{{userInfo.membership_price || 0}}</text>
+        </view>
+
+        <!-- 会员费支付状态 -->
+        <view class="info-item">
+          <text class="info-label">会员费状态 {{userInfo.isVipPaid }}</text>
+          <view class="vip-pay-status">
+            <view style="display: flex; flex-direction: column; align-items: flex-start;">
+              <text class="info-value {{userInfo.isVipPaid ? 'active-status' : 'inactive-status'}}">
+                {{userInfo.isVipPaid ? '已支付' : '未支付'}}
+              </text>
+            </view>
+            <button
+              class="pay-btn"
+              wx:if="{{!userInfo.isVipPaid}}"
+              bindtap="handleVipPay"
+            >立即支付</button>
+          </view>
+        </view>
+        <view class="info-item" wx:if="{{userInfo.isVipPaid}}">
+          <text class="info-label">会员费支付时间</text>
+          <text class="info-value">{{userInfo.vipPayTimeFmt}}</text>
+        </view>
+
+        <!-- 原有的会员信息 -->
+        <view class="info-item">
+          <text class="info-label">入馆日期</text>
+          <text class="info-value">{{membershipStartDate || '未设置'}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">会员到期</text>
+          <text class="info-value">{{membershipEndDate || '未设置'}}</text>
+        </view>
+        <!-- 仅按次会员显示剩余次数 -->
+        <view class="info-item" wx:if="{{userInfo.membership_type === '按次'}}">
+          <text class="info-label">剩余次数</text>
+          <text class="info-value">{{remainingCount || 0}} 次</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">会员状态</text>
+          <text class="info-value {{membershipStatus === '正常' ? 'active-status' : 'inactive-status'}}">{{membershipStatus || '未知'}}</text>
+        </view>
+      </view>
+    </view>
+    
+   <!-- 考级信息卡片 -->
+   <view class="info-card">
+      <view class="card-title" style="display: flex; align-items: center; justify-content: space-between;">
+        <view style="display: flex; align-items: center;">
+          <image class="card-icon" src="/images/grade_icon.png"></image>
+          <text>考级信息</text>
+        </view>
+        <text class="history-link" style="color: #fff; font-size: 26rpx; cursor: pointer;" bindtap="goToGradeHistory" hover-class="none">历史考级</text>
+      </view>
+      <view class="card-content">
+       
+        
+        <!-- 考级课时信息卡片 -->
+        <view class="courses-card" bindtap="goToClassHistory">
+          <view class="courses-header">
+            <text class="courses-title">考级课时</text>
+            <view class="courses-status">
+              <text class="courses-count">{{courseProgress.completed_courses || 0}}</text>
+              <text class="courses-unit">/ {{courseProgress.required_courses || 0}} 节</text>
+            </view>
+          </view>
+          <view class="courses-progress-wrapper">
+            <view class="courses-progress-bar">
+              <view class="courses-progress-fill" style="width:{{courseProgress.progress || 0}}%"></view>
+            </view>
+            <text class="courses-progress-label">已完成{{courseProgress.progress || 0}}%</text>
+          </view>
+          <!-- 课时配置异常提示 -->
+          <view class="courses-tip courses-tip-warning" wx:if="{{!courseProgress.can_apply_exam && courseProgress.remaining_courses > 0}}">
+            <text class="warning-icon">💡</text>
+            <text class="warning-text">还需完成 {{courseProgress.remaining_courses}} 节课时方可报名考级</text>
+          </view>
+          
+          <!-- 正常情况的课时提示 -->
+          <view class="courses-tip" wx:elif="{{userInfo.remainingCourses > 0}}">
+            <text class="tip-icon">💡</text>
+            <text class="tip-text">还需完成 {{courseProgress.remaining_courses}} 节课时方可报名考级</text>
+          </view>
+          <view class="courses-tip courses-tip-success" wx:elif="{{userInfo.remainingCourses === 0}}">
+            <text class="tip-icon">✅</text>
+            <text class="tip-text">课时已完成，可以报名考级啦！</text>
+          </view>
+          <view class="courses-view-hint">
+            <text class="hint-text">点击查看课时消费记录</text>
+          </view>
+        </view>
+        
+        <!-- 一键刷课按钮 - 只有在总课时大于0且剩余课时大于0时才显示 -->
+        <view class="quick-class-btn" catchtap="handleConsumeCourse" wx:if="{{!(userInfo.membership_type === '按次' && (courseProgress.remaining_count || 0) <= 0)}}">
+          <text class="btn-icon">📚</text>
+          <text class="btn-text">一键刷课</text>
+        </view>
+        
+        <view class="info-item">
+          <text class="info-label">当前级别</text>
+          <text class="info-value">{{currentGradeInfo.name}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">可考级别</text>
+          <text class="info-value">{{nextGradeInfo.name}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">报名费用</text>
+          <text class="info-value">￥{{nextGradeInfo.value}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">报名缴费状态</text>
+          <text class="info-value {{nextGradeExamInfo && nextGradeExamInfo.status == 1 ? 'status-paid' : 'status-unpaid'}}" >
+            {{nextGradeExamInfo && nextGradeExamInfo.status == 1 ? '已缴费' : '未缴费'}}
+          </text>
+        </view>
+        <!-- 报名考级按钮 - 只有在课时配置正常且课时已完成时才显示 -->
+        <button class="pay-btn" bindtap="handleGradeExamApply" wx:if="{{courseProgress.can_apply_exam && (!nextGradeExamInfo || nextGradeExamInfo.status != 1)}}">报名考级</button>
+        
+        <!-- 课时未配置时的提示 -->
+        <view class="config-warning" wx:if="{{nextGradeInfo.name && userInfo.totalCourses === 0}}">
+          <text class="warning-icon">⚠️</text>
+          <text class="warning-text">考级课程信息未配置，请联系管理员设置</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 我的荣誉卡片 -->
+    <view class="info-card">
+      <view class="card-title">
+        <image class="card-icon" src="/images/trophy-icon.png"></image>
+        <text>我的荣誉</text>
+      </view>
+      
+      <!-- 加载中状态 -->
+      <view class="loading-container" wx:if="{{loading}}">
+        <image class="loading-image" src="/images/loading.gif"></image>
+        <text class="loading-text">正在加载荣誉数据...</text>
+      </view>
+      
+      <!-- 空数据状态 -->
+      <view class="empty-container" wx:if="{{!loading && honorList.length === 0}}">
+        <image class="empty-image" src="/images/empty-honor.png"></image>
+        <text class="empty-text">暂无荣誉记录</text>
+      </view>
+      
+      <!-- 荣誉列表 -->
+      <view class="honor-list" wx:if="{{!loading && honorList.length > 0}}">
+        <view class="honor-item" wx:for="{{honorList}}" wx:key="_id">
+          <view class="honor-left">
+            <view class="honor-name">{{item.awardName}}</view>
+            <view class="honor-desc">{{item.competitionName}}</view>
+            <view class="honor-date">{{item.competitionDate}}</view>
+          </view>
+          <view class="honor-right">
+            <image class="honor-medal" src="/images/medal-{{item.rank || 'gold'}}.png" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 投诉建议入口 -->
+    <view class="menu-card" bindtap="goToFeedback">
+      <view class="menu-item">
+        <view class="menu-left">
+          <image class="menu-icon" src="/images/feedback-icon.png"></image>
+          <text class="menu-text">投诉建议</text>
+        </view>
+        <view class="menu-right">
+          <view wx:if="{{feedbackUnreadCount > 0}}" class="red-badge">
+            <text>{{feedbackUnreadCount}}</text>
+          </view>
+          <text class="arrow">›</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 操作按钮区域 -->
+    <view class="action-area">
+      <button class="action-btn logout-btn" bindtap="logout">退出登录</button>
+    </view>
+  </block>
+  
+  <!-- 编辑个人信息弹窗 -->
+  <view class="edit-modal" wx:if="{{showEditInfo}}">
+    <view class="edit-content">
+      <view class="edit-header">
+        <text class="edit-title">编辑个人信息</text>
+        <view class="close-btn" bindtap="hideEditForm">×</view>
+      </view>
+      
+      <!-- 头像上传 -->
+      <view class="avatar-upload">
+        <image class="upload-avatar" src="{{formData.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+        <view class="upload-btn" bindtap="uploadAvatar">更换头像</view>
+      </view>
+      
+      <!-- 个人信息表单 -->
+      <view class="edit-form">
+        <view class="form-item">
+          <text class="form-label">姓名</text>
+          <input class="form-input" value="{{formData.name}}" data-field="name" bindinput="inputFormField" placeholder="请输入姓名" />
+        </view>
+      </view>
+      
+      <!-- 提交按钮 -->
+      <button class="form-btn" bindtap="submitForm">保存信息</button>
+    </view>
+  </view>
+  
+  <!-- 历史考级弹窗 -->
+  <view class="grade-history-modal" wx:if="{{showGradeHistoryModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text>历史考级记录</text>
+        <view class="close-btn" bindtap="closeGradeHistory">×</view>
+      </view>
+      <scroll-view scroll-y="true" style="max-height: 60vh;">
+        <view wx:for="{{gradeExamHistory}}" wx:key="_id" class="history-item">
+          <view>
+            <text>级别：{{item.next_grade}}</text>
+            <text>报名费：￥{{item.fee}}</text>
+          </view>
+          <view>
+            <text>缴费时间：{{item.pay_time || '未缴费'}}</text>
+          </view>
+          <view>
+            <text>成绩：{{item.score_total || '未考试'}}</text>
+          </view>
+          <view>
+            <text>状态：{{item.status == 1 ? '已完成' : '未完成'}}</text>
+          </view>
+          <view class="divider"></view>
+        </view>
+        <view wx:if="{{!gradeExamHistory.length}}">
+          <text>暂无历史考级记录</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view> 

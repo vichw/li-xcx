@@ -1,0 +1,110 @@
+<!--pages/feedback/feedback-list/index.wxml-->
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="title">投诉建议</view>
+    <view class="add-btn" bindtap="goToSubmit">
+      <text class="icon">+</text>
+      <text>提交</text>
+    </view>
+  </view>
+
+  <!-- Tab切换 -->
+  <view class="tabs">
+    <view 
+      class="tab-item {{activeTab === 'all' ? 'active' : ''}}"
+      bindtap="onTabChange"
+      data-tab="all"
+    >
+      <text>全部</text>
+    </view>
+    <view 
+      class="tab-item {{activeTab === 'pending' ? 'active' : ''}}"
+      bindtap="onTabChange"
+      data-tab="pending"
+    >
+      <text>待处理</text>
+    </view>
+    <view 
+      class="tab-item {{activeTab === 'processed' ? 'active' : ''}}"
+      bindtap="onTabChange"
+      data-tab="processed"
+    >
+      <text>已处理</text>
+    </view>
+  </view>
+
+  <!-- 列表 -->
+  <view class="list-container">
+    <block wx:if="{{feedbackList.length > 0}}">
+      <view 
+        wx:for="{{feedbackList}}" 
+        wx:key="_id"
+        class="feedback-item"
+        bindtap="goToDetail"
+        data-id="{{item._id}}"
+      >
+        <!-- 类型标签 -->
+        <view class="type-badge {{item.type === 'complaint' ? 'type-complaint' : 'type-suggestion'}}">
+          <text>{{item.type === 'complaint' ? '投诉' : '建议'}}</text>
+        </view>
+
+        <!-- 未读标记 -->
+        <view wx:if="{{item.admin_reply && !item.is_read}}" class="unread-badge">
+          <text>未读回复</text>
+        </view>
+
+        <!-- 内容区 -->
+        <view class="content-area">
+          <!-- 类别和标题 -->
+          <view class="title-row">
+            <text class="category">[{{item.category_name}}]</text>
+            <text class="title">{{item.title}}</text>
+          </view>
+
+          <!-- 描述 -->
+          <view class="description">
+            <text>{{item.content}}</text>
+          </view>
+
+          <!-- 底部信息 -->
+          <view class="footer">
+            <!-- 图片提示 -->
+            <view wx:if="{{item.images && item.images.length > 0}}" class="image-count">
+              <text class="icon">📷</text>
+              <text>{{item.images.length}}张</text>
+            </view>
+
+            <!-- 状态 -->
+            <view class="status {{getStatusClass(item.status)}}">
+              <text>{{getStatusText(item.status)}}</text>
+            </view>
+
+            <!-- 时间 -->
+            <view class="time">
+              <text>{{item.create_time_formatted}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 空状态 -->
+    <view wx:if="{{!loading && feedbackList.length === 0}}" class="empty-state">
+      <image src="/images/empty.png" mode="aspectFit" class="empty-image" />
+      <view class="empty-text">暂无投诉建议</view>
+      <button class="empty-btn" bindtap="goToSubmit">提交投诉建议</button>
+    </view>
+
+    <!-- 加载提示 -->
+    <view wx:if="{{loading}}" class="loading">
+      <text>加载中...</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view wx:if="{{!loading && !hasMore && feedbackList.length > 0}}" class="no-more">
+      <text>没有更多了</text>
+    </view>
+  </view>
+</view>
+

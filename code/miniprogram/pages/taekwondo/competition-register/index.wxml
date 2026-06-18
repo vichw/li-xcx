@@ -1,0 +1,96 @@
+<!--比赛报名页面-->
+<view class="container">
+
+
+  <!-- 页面标题 -->
+  <view class="header">
+    <view class="title">📝 {{competition.name}}</view>
+  </view>
+
+  
+
+  <!-- 报名表单 -->
+  <view class="form-container">
+    <view class="form-item">
+      <view class="label required">姓名</view>
+      <input 
+        class="input"
+        type="text"
+        placeholder="请输入学员姓名"
+        value="{{formData.student_name}}"
+        bindinput="onNameInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <view class="label required">身份证号</view>
+      <input 
+        class="input"
+        type="idcard"
+        placeholder="请输入身份证号"
+        value="{{formData.id_card}}"
+        bindinput="onIdCardInput"
+        maxlength="18"
+      />
+      <view wx:if="{{formData.age}}" class="info-hint">
+        <text class="hint-text">年龄: {{formData.age}}岁 | 性别: {{formData.gender === 'male' ? '男' : '女'}}</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="label required">体重(kg)</view>
+      <input 
+        class="input"
+        type="digit"
+        placeholder="请输入体重"
+        value="{{formData.weight}}"
+        bindinput="onWeightInput"
+      />
+    </view>
+
+    <view class="form-item">
+      <view class="label">联系方式</view>
+      <input 
+        class="input"
+        type="text"
+        placeholder="请输入联系电话（可选）"
+        value="{{formData.contact}}"
+        bindinput="onContactInput"
+      />
+    </view>
+
+    <view class="tips">
+      <text class="tips-title">📢 报名须知</text>
+      <text class="tips-content">1. 请输入有效的18位身份证号</text>
+      <text class="tips-content">2. 年龄和性别将自动从身份证号识别</text>
+      <text class="tips-content">3. 请确保填写的信息真实准确</text>
+      <text class="tips-content">4. 报名成功后，请关注对战表发布</text>
+    </view>
+
+    <!-- 用户协议勾选 -->
+    <view class="agreement-box">
+      <checkbox-group bindchange="onAgreementChange">
+        <view class="agreement-wrapper">
+          <label class="checkbox-wrapper">
+            <checkbox value="agree" checked="{{agreedToTerms}}" color="#667eea"/>
+          </label>
+          <view class="agreement-text-wrapper">
+            <text class="agreement-text">我已阅读并同意</text>
+            <text class="agreement-link" catchtap="viewServiceAgreement">《用户服务协议》</text>
+            <text class="agreement-text">和</text>
+            <text class="agreement-link" catchtap="viewPrivacyPolicy">《隐私政策》</text>
+          </view>
+        </view>
+      </checkbox-group>
+    </view>
+
+    <button 
+      class="submit-btn"
+      bindtap="submitRegistration"
+      disabled="{{submitting}}"
+    >
+      {{submitting ? '提交中...' : '提交报名'}}
+    </button>
+  </view>
+</view>
+

@@ -1,0 +1,100 @@
+<!--pages/feedback/feedback-detail/index.wxml-->
+<view class="container" wx:if="{{!loading && feedback}}">
+  <!-- 头部信息 -->
+  <view class="header-card">
+    <view class="type-row">
+      <view class="type-badge {{feedback.type === 'complaint' ? 'type-complaint' : 'type-suggestion'}}">
+        <text>{{feedback.type === 'complaint' ? '投诉' : '建议'}}</text>
+      </view>
+      <view class="status-badge {{getStatusClass(feedback.status)}}">
+        <text>{{getStatusText(feedback.status)}}</text>
+      </view>
+    </view>
+
+    <view class="category">
+      <text>[{{feedback.category_name}}]</text>
+    </view>
+
+    <view class="title">
+      <text>{{feedback.title}}</text>
+    </view>
+  </view>
+
+  <!-- 详细内容 -->
+  <view class="content-card">
+    <view class="section-title">
+      <text>详细描述</text>
+    </view>
+    <view class="content-text">
+      <text>{{feedback.content}}</text>
+    </view>
+
+    <!-- 图片列表 -->
+    <view wx:if="{{feedback.images && feedback.images.length > 0}}" class="images-section">
+      <view class="section-title">
+        <text>相关图片（{{feedback.images.length}}张）</text>
+      </view>
+      <view class="image-grid">
+        <image
+          wx:for="{{feedback.images}}"
+          wx:key="index"
+          src="{{item}}"
+          mode="aspectFill"
+          class="image-item"
+          bindtap="previewImage"
+          data-index="{{index}}"
+        />
+      </view>
+    </view>
+  </view>
+
+  <!-- 提交信息 -->
+  <view class="info-card">
+    <view class="section-title">
+      <text>提交信息</text>
+    </view>
+    <view class="info-row">
+      <view class="label">提交人：</view>
+      <view class="value">{{feedback.user_name}}</view>
+    </view>
+    <view class="info-row">
+      <view class="label">联系方式：</view>
+      <view class="value">{{feedback.user_phone}}</view>
+      <view class="copy-btn" bindtap="copyPhone">
+        <text>复制</text>
+      </view>
+    </view>
+    <view class="info-row">
+      <view class="label">提交时间：</view>
+      <view class="value">{{feedback.create_time_formatted}}</view>
+    </view>
+  </view>
+
+  <!-- 管理员回复 -->
+  <view wx:if="{{feedback.admin_reply}}" class="reply-card">
+    <view class="section-title">
+      <text>📝 管理员回复</text>
+    </view>
+    <view class="reply-content">
+      <text>{{feedback.admin_reply}}</text>
+    </view>
+    <view class="reply-info">
+      <text>回复人：{{feedback.admin_name}}</text>
+      <text class="divider">|</text>
+      <text>{{feedback.reply_time_formatted}}</text>
+    </view>
+  </view>
+
+  <!-- 无回复提示 -->
+  <view wx:if="{{!feedback.admin_reply}}" class="no-reply-card">
+    <image src="/images/waiting.png" mode="aspectFit" class="waiting-image" />
+    <view class="waiting-text">等待管理员处理中</view>
+    <view class="waiting-hint">我们会在1-3个工作日内给予回复</view>
+  </view>
+</view>
+
+<!-- 加载中 -->
+<view wx:if="{{loading}}" class="loading-container">
+  <view class="loading-text">加载中...</view>
+</view>
+

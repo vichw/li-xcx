@@ -1,0 +1,17 @@
+{"_id":"e647148e683ee3e401cc06d55dbf6468","name":"会员费","type":"vip_member_price","value":50.0}
+{"_id":"6c2530cc683ee40e01ca2a6b0c40ff26","image":"/images/belts/white.png","index":0.0,"level":10.0,"name":"白带十级","type":"belt_level","value":300.0}
+{"_id":"557814e1683ee41f01ca080115536ffa","image":"/images/belts/white-yellow.png","index":1.0,"level":9.0,"name":"白黄带九级","type":"belt_level","value":320.0}
+{"_id":"5377d5c0683ee42801ce1a1a15e559c3","name":"黄带八级","type":"belt_level","value":360.0,"image":"/images/belts/yellow.png","index":2.0,"level":8.0}
+{"_id":"ed863e82683ee43301ce44904bcf2476","index":3.0,"level":7.0,"name":"黄绿带七级","type":"belt_level","value":400.0,"image":"/images/belts/yellow-green.png"}
+{"_id":"5377d5c0683ee44501ce1b171c9d3423","image":"/images/belts/green.png","index":4.0,"level":6.0,"name":"绿带六级","type":"belt_level","value":450.0}
+{"_id":"61493796683ee44f01cae8db3568aa18","type":"belt_level","value":500.0,"image":"/images/belts/green-blue.png","index":5.0,"level":5.0,"name":"绿蓝带五级"}
+{"_id":"c611b946683ee45701cb0bee21f9a4cf","image":"/images/belts/blue.png","index":6.0,"level":4.0,"name":"蓝带四级","type":"belt_level","value":550.0}
+{"_id":"61493796683ee46101cae9992cd4429c","type":"belt_level","value":600.0,"image":"/images/belts/blue-red.png","index":7.0,"level":3.0,"name":"蓝红带三级"}
+{"_id":"486be3ad683ee46701c8618c6ec2b397","value":650.0,"image":"/images/belts/red.png","index":8.0,"level":2.0,"name":"红带二级","type":"belt_level"}
+{"_id":"82bba809683ee46d01cbc6b537fbb98a","type":"belt_level","value":700.0,"image":"/images/belts/red-black.png","index":9.0,"level":1.0,"name":"红黑带一级"}
+{"_id":"29dca3d5683ee4ae01cc881d0d7ab116","name":"黑带一段/品","type":"belt_level","value":2600.0,"image":"/images/belts/black.png","index":10.0,"level":1.0}
+{"_id":"c0a2d8e4683ee4b801cba7630fcfc724","name":"黑带二段/品","type":"belt_level","value":3200.0,"image":"/images/belts/black.png","index":11.0,"level":2.0}
+{"_id":"5377d5c0683ee4c701ce1f640bfe1356","index":12.0,"level":3.0,"name":"黑带三段/品","type":"belt_level","value":4000.0,"image":"/images/belts/black.png"}
+{"_id":"c611b94668469902025107ab59d69d74","value":0.2,"name":"行为素质","type":"weights_behavior"}
+{"_id":"dd1eb2b468469916025007ef3e0ae0ff","name":"专项技术","type":"weights_tech","value":0.5}
+{"_id":"82bba809684699200252b361221bf8dc","name":"身体素质","type":"weights_physical","value":0.3}

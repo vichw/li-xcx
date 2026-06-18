@@ -1,0 +1,14 @@
+{
+  "name": "gradeExam",
+  "version": "1.0.0",
+  "description": "跆拳道考级相关云函数",
+  "main": "createGradeExamOrder.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+} 

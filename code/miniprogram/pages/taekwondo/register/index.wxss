@@ -1,0 +1,405 @@
+/* 报名页面样式 */
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 40rpx;
+}
+
+/* 顶部标题区域 */
+.header {
+  width: 100%;
+  height: 360rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-bg {
+  width: 100%;
+  height: 100%;
+  filter: brightness(0.75);
+}
+
+.header-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.header-title {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20rpx;
+}
+
+.header-subtitle {
+  font-size: 32rpx;
+  color: #ffffff;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* 信息说明区域 */
+.info-section {
+  width: 90%;
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  margin-top: -40rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  z-index: 2;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #1A237E;
+  margin-bottom: 30rpx;
+  position: relative;
+  padding-left: 20rpx;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8rpx;
+  width: 8rpx;
+  height: 36rpx;
+  background-color: #FF5722;
+  border-radius: 4rpx;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20rpx;
+}
+
+.info-icon {
+  font-size: 40rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.info-text {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* 报名方式区域 */
+.register-section {
+  width: 90%;
+  margin-bottom: 30rpx;
+}
+
+.register-card {
+  background-color: #ffffff;
+  border-radius: 12rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.card-title {
+  background-color: #1A237E;
+  padding: 20rpx 30rpx;
+  display: flex;
+  align-items: center;
+}
+
+.card-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 15rpx;
+}
+
+.card-title text {
+  font-size: 32rpx;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.card-content {
+  padding: 30rpx;
+}
+
+.card-text {
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 30rpx;
+  display: block;
+}
+
+/* 协议勾选样式 */
+.agreement-box {
+  width: 100%;
+  margin: 20rpx 0;
+  padding: 0 10rpx;
+}
+
+.agreement-wrapper {
+  display: flex;
+  align-items: flex-start;
+}
+
+.checkbox-wrapper {
+  flex-shrink: 0;
+  margin-right: 8rpx;
+}
+
+.agreement-text-wrapper {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.agreement-text {
+  color: #666;
+  margin: 0 4rpx;
+}
+
+.agreement-link {
+  color: #FF5722;
+  text-decoration: underline;
+  margin: 0 2rpx;
+}
+
+/* 按钮样式 */
+.action-btn {
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.phone-btn {
+  background-color: #1A237E;
+  color: #ffffff;
+}
+
+.register-btn {
+  background-color: #FF5722;
+  color: #ffffff;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: #ffffff;
+  width: 240rpx;
+  margin: 30rpx auto 0;
+}
+
+/* 输入框样式 */
+.input-group {
+  margin-bottom: 30rpx;
+}
+
+.input-label {
+  font-size: 28rpx;
+  color: #333333;
+  margin-bottom: 15rpx;
+  display: block;
+}
+
+.input-field {
+  width: 100%;
+  height: 88rpx;
+  background-color: #f5f5f5;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #333333;
+  box-sizing: border-box;
+}
+
+/* 二维码区域 */
+.qrcode-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.qrcode-image {
+  width: 400rpx;
+  height: 400rpx;
+  background-color: #f5f5f5;
+  border-radius: 8rpx;
+  border: 2rpx solid #eeeeee;
+}
+
+/* 加载中样式 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 40rpx 0;
+}
+
+.loading-image {
+  width: 80rpx;
+  height: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #888888;
+}
+
+/* 底部版权信息 */
+.footer {
+  font-size: 24rpx;
+  color: #999999;
+  text-align: center;
+  margin-top: 40rpx;
+}
+
+/* 缴费弹窗样式 */
+.payment-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 600rpx;
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  background-color: #1A237E;
+  padding: 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.modal-close {
+  font-size: 48rpx;
+  color: #ffffff;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 40rpx 30rpx;
+}
+
+.payment-info {
+  margin-bottom: 30rpx;
+}
+
+.payment-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 15rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.payment-label {
+  font-size: 28rpx;
+  color: #666666;
+}
+
+.payment-value {
+  font-size: 28rpx;
+  color: #333333;
+  font-weight: 500;
+}
+
+.payment-amount {
+  color: #FF5722;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.payment-notice {
+  background-color: #f8f9fa;
+  padding: 20rpx;
+  border-radius: 8rpx;
+  border-left: 4rpx solid #FF5722;
+}
+
+.notice-text {
+  font-size: 24rpx;
+  color: #666666;
+  line-height: 1.4;
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 88rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  border: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cancel-btn {
+  background-color: #f5f5f5;
+  color: #666666;
+}
+
+.confirm-btn {
+  background-color: #FF5722;
+  color: #ffffff;
+} 

@@ -1,0 +1,81 @@
+<view class="container">
+  <!-- 课时进度概览 -->
+  <view class="progress-card">
+    <view class="progress-header">
+      <text class="progress-title">课时进度</text>
+      <text class="progress-grade">{{courseProgress.current_grade || '未定级'}}</text>
+    </view>
+    <view class="progress-content">
+      <view class="progress-item">
+        <text class="progress-label">考级所需</text>
+        <text class="progress-value">{{courseProgress.required_courses || 0}} 课时</text>
+      </view>
+      <view class="progress-item">
+        <text class="progress-label">已完成</text>
+        <text class="progress-value highlight">{{courseProgress.completed_courses || 0}} 课时</text>
+      </view>
+      <view class="progress-item">
+        <text class="progress-label">还需</text>
+        <text class="progress-value warning">{{courseProgress.remaining_courses || 0}} 课时</text>
+      </view>
+    </view>
+    <!-- 进度条 -->
+    <view class="progress-bar-wrapper">
+      <view class="progress-bar-bg">
+        <view class="progress-bar-fill" style="width: {{courseProgress.progress || 0}}%;"></view>
+      </view>
+      <text class="progress-percent">{{courseProgress.progress || 0}}%</text>
+    </view>
+  </view>
+
+  <!-- 记录列表标题 -->
+  <view class="list-header">
+    <text class="list-title">消费记录</text>
+    <text class="list-count">共 {{total}} 条</text>
+  </view>
+
+  <!-- 记录列表 -->
+  <view class="record-list" wx:if="{{courseRecords.length > 0}}">
+    <view class="record-item" wx:for="{{courseRecords}}" wx:key="_id">
+      <view class="record-left">
+        <view class="record-date">{{item.course_date}}</view>
+        <view class="record-time">{{item.course_time}}</view>
+      </view>
+      <view class="record-center">
+        <view class="record-source">
+          <text class="source-tag {{item.operator_source === 'manager' ? 'manager' : 'miniprogram'}}">
+            {{item.operator_source === 'manager' ? '管理端' : '小程序'}}
+          </text>
+        </view>
+        <view class="record-operator">操作人：{{item.operator}}</view>
+      </view>
+      <view class="record-right">
+        <view class="record-courses">
+          <text class="courses-label">课时</text>
+          <text class="courses-value">+1</text>
+        </view>
+        <view class="record-deduct" wx:if="{{item.is_deducted}}">
+          <text class="deduct-label">次数</text>
+          <text class="deduct-value">-1</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!loading && courseRecords.length === 0}}">
+    <image class="empty-icon" src="/images/empty.png" mode="aspectFit"></image>
+    <text class="empty-text">暂无消费记录</text>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 没有更多 -->
+  <view class="no-more" wx:if="{{!hasMore && courseRecords.length > 0}}">
+    <text>— 没有更多了 —</text>
+  </view>
+</view>
+

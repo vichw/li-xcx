@@ -1,0 +1,90 @@
+<!-- 用户服务协议 -->
+<view class="agreement-container">
+  <view class="agreement-header">
+    <text class="agreement-title">用户服务协议</text>
+    <text class="update-time">更新日期：2025年12月</text>
+  </view>
+
+  <scroll-view scroll-y="true" class="agreement-content">
+    <view class="section">
+      <text class="section-title">一、协议的接受与修改</text>
+      <text class="section-content">欢迎使用本跆拳道馆小程序（以下简称"本服务"）。在使用本服务前，请您仔细阅读并充分理解本协议。您点击"同意"按钮或使用本服务，即表示您已阅读并同意接受本协议的全部内容。</text>
+      <text class="section-content">我们有权根据需要不时修改本协议，修改后的协议一经公布即生效。如您继续使用本服务，即表示您同意接受修改后的协议。</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">二、服务内容</text>
+      <text class="section-content">本服务主要包括但不限于：</text>
+      <text class="section-content">1. 提供跆拳道馆的课程信息查询</text>
+      <text class="section-content">2. 提供在线报名、考级报名、比赛报名等服务</text>
+      <text class="section-content">3. 提供会员信息管理、课时记录查询</text>
+      <text class="section-content">4. 提供荣誉展示、投诉反馈等功能</text>
+      <text class="section-content">5. 提供其他跆拳道馆相关的便捷服务</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">三、用户注册与账号</text>
+      <text class="section-content">1. 用户需要通过手机号码进行登录注册</text>
+      <text class="section-content">2. 用户应当提供真实、准确、完整的个人信息</text>
+      <text class="section-content">3. 用户对账号和密码的安全性负责</text>
+      <text class="section-content">4. 禁止用户将账号转让、出借给他人使用</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">四、用户行为规范</text>
+      <text class="section-content">使用本服务时，用户应遵守以下规范：</text>
+      <text class="section-content">1. 遵守中华人民共和国相关法律法规</text>
+      <text class="section-content">2. 不得利用本服务从事违法违规活动</text>
+      <text class="section-content">3. 不得发布虚假信息或恶意攻击他人</text>
+      <text class="section-content">4. 不得干扰或破坏本服务的正常运行</text>
+      <text class="section-content">5. 尊重跆拳道馆的规章制度和教练的指导</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">五、会员权益与义务</text>
+      <text class="section-content">1. 会员享有参加跆拳道馆课程和活动的权利</text>
+      <text class="section-content">2. 会员应按时缴纳会费和相关费用</text>
+      <text class="section-content">3. 会员应遵守跆拳道馆的规章制度</text>
+      <text class="section-content">4. 会员如需退费，应按照跆拳道馆的退费政策办理</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">六、知识产权</text>
+      <text class="section-content">1. 本服务的所有内容，包括但不限于文字、图片、logo、音视频等，均受著作权法保护</text>
+      <text class="section-content">2. 未经授权，用户不得复制、传播本服务的任何内容</text>
+      <text class="section-content">3. 用户上传的内容应保证不侵犯第三方权益</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">七、免责声明</text>
+      <text class="section-content">1. 本服务按"现状"提供，不保证服务不中断或无错误</text>
+      <text class="section-content">2. 因不可抗力、系统故障等原因导致的服务中断，我们不承担责任</text>
+      <text class="section-content">3. 用户在跆拳道训练过程中应注意人身安全，我们对训练中的意外伤害不承担责任（除非系我们过错所致）</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">八、协议终止</text>
+      <text class="section-content">1. 用户可以随时停止使用本服务</text>
+      <text class="section-content">2. 如用户违反本协议，我们有权终止向用户提供服务</text>
+      <text class="section-content">3. 协议终止后，用户应停止使用本服务</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">九、联系方式</text>
+      <text class="section-content">如您对本协议有任何疑问，请通过以下方式联系我们：</text>
+      <text class="section-content">1. 在小程序内提交反馈</text>
+      <text class="section-content">2. 直接到跆拳道馆前台咨询</text>
+    </view>
+
+    <view class="section">
+      <text class="section-title">十、其他</text>
+      <text class="section-content">1. 本协议的解释、效力及争议解决适用中华人民共和国法律</text>
+      <text class="section-content">2. 如本协议的任何条款被认定为无效，不影响其他条款的效力</text>
+    </view>
+  </scroll-view>
+
+  <view class="agreement-footer">
+    <button class="close-btn" bindtap="goBack">我知道了</button>
+  </view>
+</view>
+

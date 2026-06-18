@@ -1,0 +1,3 @@
+/* 引用服务协议的样式 */
+@import "service-agreement.wxss";
+
