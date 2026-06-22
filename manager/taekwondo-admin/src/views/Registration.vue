@@ -157,10 +157,11 @@
           <el-radio-group v-model="studentForm.membership_type" @change="handleMembershipTypeChange">
             <el-radio label="按次">按次</el-radio>
             <el-radio label="年卡">年卡</el-radio>
+            <el-radio label="自由">自由</el-radio>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="会员卡" v-if="studentForm.membership_type === '年卡'">
+        <el-form-item label="会员卡" v-if="studentForm.membership_type === '年卡' || studentForm.membership_type === '自由'">
           <el-select v-model="studentForm.membership_name" @change="handleYearCardChange" class="w-full">
             <el-option
               v-for="card in vipTypes"
@@ -412,7 +413,7 @@ const loadGradeList = async () => {
 // 处理会员类型变更
 const handleMembershipTypeChange = (type) => {
   studentForm.value.membership_type = type
-  
+
   if (type === '按次') {
     // 默认设置为10次
     studentForm.value.remaining_count = 10
@@ -421,6 +422,15 @@ const handleMembershipTypeChange = (type) => {
   } else if (type === '年卡') {
     studentForm.value.remaining_count = 0 // 年卡不计次数
     // 如果有会员卡类型，默认选择第一个
+    if (vipTypes.value && vipTypes.value.length > 0) {
+      studentForm.value.membership_name = vipTypes.value[0].value
+      studentForm.value.membership_price = vipTypes.value[0].price
+    }
+  } else if (type === '自由') {
+    // 自由卡：与年卡类似（一年有效、不扣次数），价格取自 configs.vip_type
+    studentForm.value.remaining_count = 0
+    studentForm.value.purchased_count = 0
+    studentForm.value.class_price = 0
     if (vipTypes.value && vipTypes.value.length > 0) {
       studentForm.value.membership_name = vipTypes.value[0].value
       studentForm.value.membership_price = vipTypes.value[0].price

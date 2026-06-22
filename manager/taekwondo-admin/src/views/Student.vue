@@ -25,6 +25,7 @@
           <el-option label="全部" value="" />
           <el-option label="按次" value="按次" />
           <el-option label="年卡" value="年卡" />
+          <el-option label="自由" value="自由" />
         </el-select>
 
         <el-select
@@ -74,7 +75,7 @@
         <el-table-column prop="grade" label="等级" width="70" />
         <el-table-column label="会员类型" width="70">
           <template #default="scope">
-            <el-tag :type="scope.row.membership_type === '年卡' ? 'success' : 'warning'">
+            <el-tag :type="getMembershipTagType(scope.row.membership_type)">
               {{ scope.row.membership_type || '未设置' }}
             </el-tag>
             <div v-if="scope.row.membership_name" class="text-xs text-gray-500 mt-1">
@@ -190,13 +191,22 @@
           <el-radio-group v-model="studentForm.membership_type" @change="handleMembershipTypeChange">
             <el-radio label="按次">按次</el-radio>
             <el-radio label="年卡">年卡</el-radio>
+            <el-radio label="自由">自由</el-radio>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="会员卡" v-if="studentForm.membership_type === '年卡'">
+        <el-form-item label="会员卡" v-if="studentForm.membership_type === '年卡' || studentForm.membership_type === '自由'">
           <el-select v-model="studentForm.membership_name" @change="handleYearCardChange" class="w-full">
             <el-option
+              v-if="studentForm.membership_type === '年卡'"
               v-for="card in gradeYearCardOptions"
+              :key="card.value"
+              :label="card.label"
+              :value="card.value"
+            />
+            <el-option
+              v-if="studentForm.membership_type === '自由'"
+              v-for="card in freeCardOptions"
               :key="card.value"
               :label="card.label"
               :value="card.value"
@@ -301,7 +311,7 @@
           </el-upload>
         </el-form-item>
 
-        <el-form-item label="会员开始日期" prop="membership_start_date" v-if="studentForm.membership_type === '年卡'">
+        <el-form-item label="会员开始日期" prop="membership_start_date" v-if="studentForm.membership_type === '年卡' || studentForm.membership_type === '自由'">
           <el-date-picker
             v-model="studentForm.membership_start_date"
             type="date"
@@ -312,7 +322,7 @@
           />
         </el-form-item>
 
-        <el-form-item label="会员结束日期" prop="membership_end_date" v-if="studentForm.membership_type === '年卡'">
+        <el-form-item label="会员结束日期" prop="membership_end_date" v-if="studentForm.membership_type === '年卡' || studentForm.membership_type === '自由'">
           <el-date-picker
             v-model="studentForm.membership_end_date"
             type="date"
@@ -480,9 +490,9 @@ const formRules = {
     { required: true, message: '请选择会员类型', trigger: 'change' }
   ],
   membership_start_date: [
-    { 
+    {
       validator: (rule, value, callback) => {
-        if (studentForm.value.membership_type === '年卡') {
+        if (studentForm.value.membership_type === '年卡' || studentForm.value.membership_type === '自由') {
           if (!value) {
             callback(new Error('请选择会员开始日期'))
           } else {
@@ -496,9 +506,9 @@ const formRules = {
     }
   ],
   membership_end_date: [
-    { 
+    {
       validator: (rule, value, callback) => {
-        if (studentForm.value.membership_type === '年卡') {
+        if (studentForm.value.membership_type === '年卡' || studentForm.value.membership_type === '自由') {
           if (!value) {
             callback(new Error('请选择会员结束日期'))
           } else {
@@ -590,15 +600,25 @@ const filteredStudents = computed(() => {
 // 根据选择的等级生成会员卡选项
 const gradeYearCardOptions = computed(() => {
   if (!studentForm.value.grade || !gradeList.value.length) return []
-  
+
   const selectedGrade = gradeList.value.find(grade => grade.name === studentForm.value.grade)
   if (!selectedGrade || !selectedGrade.yearprice) return []
-  
+
   return [{
     label: `${selectedGrade.name}-${selectedGrade.yearprice}`,
     value: selectedGrade.yearprice,
     price: selectedGrade.yearprice
   }]
+})
+
+// 自由卡选项：从 configs(type=vip_type) 拉取
+const freeCardOptions = computed(() => {
+  if (!vipTypes.value || !vipTypes.value.length) return []
+  return vipTypes.value.map(card => ({
+    label: `${card.label}-${card.price}元`,
+    value: card.label,
+    price: card.price
+  }))
 })
 
 // 加载学生数据
@@ -792,7 +812,7 @@ const submitForm = async () => {
       studentData.membership_start_date = '';
       studentData.membership_end_date = '';
     } else {
-      // 年卡会员购买次数为0
+      // 年卡/自由卡：购买次数与单次价格均不计入
       studentData.purchased_count = 0;
       studentData.class_price = 0;
     }
@@ -1034,6 +1054,16 @@ const getStatusTagType = (row) => {
   return statusTypeMap[status] || 'info'
 }
 
+// 获取会员类型标签颜色（年卡-success，自由-primary，按次-warning）
+const getMembershipTagType = (membershipType) => {
+  const map = {
+    '年卡': 'success',
+    '自由': 'primary',
+    '按次': 'warning'
+  }
+  return map[membershipType] || 'info'
+}
+
 const formatDateTime = (val) => {
   if (!val) return ''
   return dayjs(val).format('YYYY-MM-DD HH:mm:ss')
@@ -1071,7 +1101,7 @@ const loadConfigs = async () => {
 // 处理会员类型变更
 const handleMembershipTypeChange = (type) => {
   studentForm.value.membership_type = type
-  
+
   if (type === '按次') {
     // 新建时默认设置单次价格和次数
     if (!isEdit.value) {
@@ -1114,13 +1144,32 @@ const handleMembershipTypeChange = (type) => {
       studentForm.value.membership_name = yearCardOption.value;
       studentForm.value.membership_price = Number(yearCardOption.price);
     }
+  } else if (type === '自由') {
+    // 自由卡 = 年卡的兄弟分类：一年有效、不扣次数、价格取自 configs.vip_type
+    studentForm.value.purchased_count = 0 // 不计购买次数
+    studentForm.value.remaining_count = 0 // 不计剩余次数
+    studentForm.value.class_price = 0 // 不计单次价格
+    // 默认选第一张自由卡档位
+    if (freeCardOptions.value.length > 0) {
+      const freeCard = freeCardOptions.value[0]
+      studentForm.value.membership_name = freeCard.value
+      studentForm.value.membership_price = Number(freeCard.price)
+    }
   }
 }
 
-// 处理年卡选择
-const handleYearCardChange = (yearPrice) => {
-  studentForm.value.membership_name = yearPrice
-  studentForm.value.membership_price = Number(yearPrice)
+// 处理会员卡选择（年卡：value 是价格；自由卡：value 是 card.label，需要反查 price）
+const handleYearCardChange = (selectedValue) => {
+  if (studentForm.value.membership_type === '自由') {
+    // 自由卡：selectedValue 是 card.label，从 freeCardOptions 中查 price
+    const freeCard = freeCardOptions.value.find(card => card.value === selectedValue)
+    studentForm.value.membership_name = selectedValue
+    studentForm.value.membership_price = freeCard ? Number(freeCard.price) : 0
+  } else {
+    // 年卡：selectedValue 是年卡价格字符串（兼容历史逻辑）
+    studentForm.value.membership_name = selectedValue
+    studentForm.value.membership_price = Number(selectedValue)
+  }
 }
 
 // 处理购买次数变更

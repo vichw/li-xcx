@@ -15,9 +15,9 @@ const db = cloud.database();
 function calculateMembershipStatus(student) {
   const membershipType = student.membership_type;
   const now = new Date();
-  
-  // 年卡会员：根据到期日期判断
-  if (membershipType === '年卡') {
+
+  // 年卡/自由卡会员：根据到期日期判断
+  if (membershipType === '年卡' || membershipType === '自由') {
     const endDate = student.membership_end_date ? new Date(student.membership_end_date) : null;
     
     if (!endDate) {

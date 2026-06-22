@@ -1471,8 +1471,8 @@ Page({
     console.log('会员类型:', membershipType);
     
     // 检查年卡会员到期情况
-    if (membershipType === '年卡') {
-      console.log('✓ 检测到年卡会员，开始检查到期情况');
+    if (membershipType === '年卡' || membershipType === '自由') {
+      console.log('✓ 检测到年卡/自由卡会员，开始检查到期情况');
       this.checkYearCardExpiry(userInfo, membershipEndDate);
     }
     // 检查按次会员剩余次数
