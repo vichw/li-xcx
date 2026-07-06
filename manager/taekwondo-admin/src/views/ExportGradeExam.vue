@@ -20,6 +20,22 @@
             :value="opt.value"
           />
         </el-select>
+        <span class="mr-2" style="color:#606266;font-size:14px;">报名时间</span>
+        <el-date-picker
+          v-model="dateRange[0]"
+          type="date"
+          value-format="YYYY-MM-DD"
+          placeholder="开始日期"
+          class="w-44 mr-1"
+        />
+        <span class="mr-1">~</span>
+        <el-date-picker
+          v-model="dateRange[1]"
+          type="date"
+          value-format="YYYY-MM-DD"
+          placeholder="结束日期"
+          class="w-44 mr-4"
+        />
         <el-input
           v-model="searchKeyword"
           placeholder="搜索姓名/身份证号"
@@ -188,6 +204,12 @@ const deleteStatusOptions = [
 ]
 const selectedDeleteStatus = ref('')
 
+// 报名时间范围：默认回填 三个月前 ~ 今天
+const dateRange = ref([
+  dayjs().subtract(3, 'month').format('YYYY-MM-DD'),
+  dayjs().format('YYYY-MM-DD')
+])
+
 onMounted(async () => {
   const levels = await getBeltLevels()
   gradeList.value = [{ name: '全部', index: -1, value: 0 }, ...levels]
@@ -200,7 +222,8 @@ const fetchList = async () => {
   try {
     list.value = await getGradeExamMembersByLevel(
       selectedGrade.value === '全部' ? '' : selectedGrade.value,
-      selectedDeleteStatus.value
+      selectedDeleteStatus.value,
+      dateRange.value
     )
   } catch (e) {
     ElMessage.error('查询失败')

@@ -1,4 +1,5 @@
 import mockService from './mockService'
+import dayjs from 'dayjs'
 
 // 是否使用模拟数据（开发测试用）
 const USE_MOCK = false  // 关闭模拟数据模式，使用实际的腾讯云服务
@@ -879,14 +880,14 @@ export const uploadFile = async (param) => {
  * @param {string} gradeLevel
  * @returns {Promise<Array>} [{name, idCard, avatar}]
  */
-export const getGradeExamMembersByLevel = async (gradeLevel, deleteStatus = '') => {
+export const getGradeExamMembersByLevel = async (gradeLevel, deleteStatus = '', dateRange = null) => {
   const database = await ensureDatabase();
   if (!database) return [];
 
   try {
     // 1. 查 gradeExams
     let query = database.collection('gradeExams');
-    const whereCond = { 
+    const whereCond = {
       status: 1
     };
     if (gradeLevel) {
@@ -895,6 +896,23 @@ export const getGradeExamMembersByLevel = async (gradeLevel, deleteStatus = '') 
     // 根据deleteStatus筛选
     if (deleteStatus !== '') {
       whereCond.delete = Number(deleteStatus);
+    }
+    // 根据报名时间范围筛选：create_time >= 起点当天0点，< 结束日期的下一天0点（含当天）
+    if (Array.isArray(dateRange) && dateRange.length === 2) {
+      const [start, end] = dateRange;
+      const cmd = database.command;
+      let timeCond = null;
+      if (start && end) {
+        timeCond = cmd.gte(dayjs(start).startOf('day').toDate())
+          .and(cmd.lt(dayjs(end).add(1, 'day').startOf('day').toDate()));
+      } else if (start) {
+        timeCond = cmd.gte(dayjs(start).startOf('day').toDate());
+      } else if (end) {
+        timeCond = cmd.lt(dayjs(end).add(1, 'day').startOf('day').toDate());
+      }
+      if (timeCond) {
+        whereCond.create_time = timeCond;
+      }
     }
     query = query.where(whereCond);
     const examsRes = await query.get();
